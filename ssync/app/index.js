@@ -11,6 +11,9 @@ const App = () => {
       <Link href="/login" style={{ color: "blue" }}>
         Login
       </Link>
+      <Link href="/home" style={{ color: "blue" }}>
+        Home
+      </Link>
     </View>
   );
 };
