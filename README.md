@@ -8,6 +8,12 @@
 git pull origin main
 ```
 
+and
+
+```
+cd ssync
+```
+
 - [] Don't delete branch during merging
 - [] Check and update [Trello] (https://trello.com/b/j6zloh1T/4511-ssync)
 - [] Create a separate branch for different pages
