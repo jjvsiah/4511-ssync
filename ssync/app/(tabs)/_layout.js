@@ -23,6 +23,8 @@ const TabsLayout = () => {
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
+          tabBarActiveTintColor: "#000",
+          tabBarInactiveTintColor: "#808080",
         }}
       >
         <Tabs.Screen
@@ -59,7 +61,7 @@ const TabsLayout = () => {
           name="tasks"
           options={{
             title: "Tasks",
-            headerShown: true,
+            headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 iconName="time" // Pass as a string, not an object
