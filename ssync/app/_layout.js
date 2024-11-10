@@ -2,10 +2,9 @@ import { useEffect } from "react";
 import { useFonts } from "expo-font";
 import "react-native-url-polyfill/auto";
 import { SplashScreen, Stack } from "expo-router";
-import "nativewind"; // or import 'nativewind/tailwind';
+import "nativewind";
 import "../global.css";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
@@ -23,15 +22,10 @@ const RootLayout = () => {
 
   useEffect(() => {
     if (error) throw error;
-
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, error]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   if (!fontsLoaded && !error) {
     return null;
@@ -41,6 +35,7 @@ const RootLayout = () => {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="create-task" options={{ headerShown: false }} />
     </Stack>
   );
 };
