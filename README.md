@@ -54,8 +54,11 @@ cd ssync
 For every user, their data is stored as follows:
 
 users: array holding all users ie {user1, user2, user3}
+
 user: { name, email, password, projects: [] } 
+
 projects: list of all projects user is in ie {project1, project2}
+
 project: {projectName, description}
 
 TODO:
