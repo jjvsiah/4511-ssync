@@ -76,14 +76,16 @@ const signup = () => {
     try {
       const existingUsers = await AsyncStorage.getItem('users');
       const users = existingUsers ? JSON.parse(existingUsers) : [];
-      users.push({ name, email, password });
+      users.push({ name, email, password, projects: [] });
       await AsyncStorage.setItem('users', JSON.stringify(users));
       console.log('User data saved successfully');
+
+      await AsyncStorage.setItem('loggedInUser', email);
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+      router.push('/home');
     } catch (error) {
       console.error('Error saving data to AsyncStorage:', error);
     }
-
-    router.push('/home');
   };
 
   return (
