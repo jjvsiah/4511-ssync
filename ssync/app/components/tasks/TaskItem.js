@@ -1,178 +1,113 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  ScrollView,
-} from "react-native";
+import React from "react";
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 
-const TaskItem = ({ title, date, priority, progress, icon, assignees }) => (
-  <View style={styles.taskCard}>
-    <View style={styles.taskHeader}>
-      {/* Task Icon */}
-      <View style={styles.taskIconContainer}>
-        <Image source={icon} style={styles.taskIcon} />
-      </View>
+const TaskProgress = ({ progress, subtaskCount }) => {
+  const segments = Array(subtaskCount).fill(0);
+  const filledSegments = Math.floor((progress / 100) * subtaskCount);
 
-      {/* Priority Tag */}
-      <View
-        style={[
-          styles.priorityTag,
-          {
-            backgroundColor: priority === "High" ? "#FFE4E4" : "#E3F5E1",
-          },
-        ]}
-      >
-        <Text
-          style={[
-            styles.priorityText,
-            {
-              color: priority === "High" ? "#FF4444" : "#4CAF50",
-            },
-          ]}
-        >
-          {priority}
-        </Text>
-      </View>
-    </View>
-
-    {/* Task Title */}
-    <Text style={styles.taskTitle}>{title}</Text>
-
-    {/* Progress Bar Container */}
+  return (
     <View style={styles.progressContainer}>
       <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: `${progress}%` }]} />
-      </View>
-      <Text style={styles.progressText}>Progress</Text>
-    </View>
-
-    {/* Bottom Row */}
-    <View style={styles.taskFooter}>
-      {/* Assignees */}
-      <View style={styles.assignees}>
-        {assignees.map((assignee, index) => (
-          <Image
+        {segments.map((_, index) => (
+          <View
             key={index}
-            source={assignee}
-            style={[styles.assigneeAvatar, { marginLeft: index > 0 ? -8 : 0 }]}
+            style={[
+              styles.progressSegment,
+              index < filledSegments && styles.progressSegmentFilled,
+              index === segments.length - 1 && styles.progressSegmentLast,
+            ]}
           />
         ))}
       </View>
-
-      {/* Date */}
-      <View style={styles.dateContainer}>
-        <Ionicons name="calendar-outline" size={16} color="#666" />
-        <Text style={styles.dateText}>{date}</Text>
-      </View>
+      <Text style={styles.progressLabel}>Progress</Text>
     </View>
-  </View>
-);
-
-const Tasks = () => {
-  const router = useRouter();
-
-  const hardcodedTasks = [
-    {
-      title: "Create low fidelity prototype",
-      date: "10 Jan",
-      priority: "High",
-      progress: 60,
-      // icon: require("../assets/images/figma-icon.png"),
-      assignees: [
-        // require("../assets/avatar1.png"),
-        // require("../assets/avatar2.png"),
-      ],
-    },
-    {
-      title: "Push changes for launch page",
-      date: "7 Feb",
-      priority: "Medium",
-      progress: 40,
-      // icon: require("../assets/github-icon.png"),
-      assignees: [
-        // require("../assets/avatar3.png"),
-        // require("../assets/avatar4.png"),
-      ],
-    },
-  ];
-
-  return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        paddingTop: -30,
-      }}
-    >
-      {/* Filter Button */}
-      <TouchableOpacity style={styles.filterButton}>
-        <Text style={styles.filterText}>Filter</Text>
-        <Ionicons name="filter" size={16} />
-      </TouchableOpacity>
-
-      {/* Tasks List */}
-      <ScrollView style={styles.tasksList}>
-        {hardcodedTasks.map((task, index) => (
-          <TaskItem key={index} {...task} />
-        ))}
-      </ScrollView>
-    </SafeAreaView>
   );
 };
 
+const TaskItem = ({ task, onPress }) => {
+  const getPriorityStyle = (priority) => {
+    const colors = {
+      High: { bg: "#FFE4E4", text: "#FF4444" },
+      Medium: { bg: "#E3F5E1", text: "#4CAF50" },
+      Low: { bg: "#FFF4E5", text: "#FFA500" },
+    };
+    return colors[priority];
+  };
+
+  const priorityStyle = getPriorityStyle(task.priority);
+
+  return (
+    <TouchableOpacity style={styles.container} onPress={onPress}>
+      <View style={styles.header}>
+        {/* Platform Icon */}
+        <Image source={task.platformIcon} style={styles.platformIcon} />
+
+        {/* Priority Tag */}
+        <View
+          style={[styles.priorityTag, { backgroundColor: priorityStyle.bg }]}
+        >
+          <Text style={[styles.priorityText, { color: priorityStyle.text }]}>
+            {task.priority}
+          </Text>
+        </View>
+      </View>
+
+      <Text style={styles.title}>{task.title}</Text>
+
+      {!task.isComplete && (
+        <TaskProgress
+          progress={task.progress}
+          subtaskCount={task.subtasks.length}
+        />
+      )}
+
+      <View style={styles.footer}>
+        <View style={styles.assignees}>
+          {task.assignees.map((assignee, index) => (
+            <Image
+              key={assignee.id}
+              source={{ uri: assignee.avatar }}
+              style={[
+                styles.assigneeAvatar,
+                index > 0 && styles.assigneeAvatarOverlap,
+              ]}
+            />
+          ))}
+        </View>
+
+        <View style={styles.dateContainer}>
+          <Ionicons name="calendar-outline" size={16} color="#666" />
+          <Text style={styles.dateText}>{task.date}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+export { TaskItem };
+
 const styles = StyleSheet.create({
-  filterButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#8EC9E6",
-    alignSelf: "flex-start",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    marginLeft: 16,
-  },
-  filterText: {
-    marginRight: 4,
-  },
-  tasksList: {
-    padding: 16,
-  },
-  taskCard: {
+  container: {
     backgroundColor: "white",
     borderRadius: 12,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 12,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
-  taskHeader: {
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 12,
   },
-  taskIconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: "#F5F5F5",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  taskIcon: {
-    width: 20,
-    height: 20,
+  platformIcon: {
+    width: 24,
+    height: 24,
   },
   priorityTag: {
     paddingVertical: 4,
@@ -183,7 +118,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
   },
-  taskTitle: {
+  title: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 12,
@@ -192,21 +127,29 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   progressBar: {
+    flexDirection: "row",
     height: 6,
     backgroundColor: "#F0F0F0",
     borderRadius: 3,
+    overflow: "hidden",
     marginBottom: 4,
   },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "black",
-    borderRadius: 3,
+  progressSegment: {
+    flex: 1,
+    backgroundColor: "#F0F0F0",
+    marginRight: 2,
   },
-  progressText: {
+  progressSegmentFilled: {
+    backgroundColor: "#275BBC",
+  },
+  progressSegmentLast: {
+    marginRight: 0,
+  },
+  progressLabel: {
     fontSize: 12,
     color: "#666",
   },
-  taskFooter: {
+  footer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -221,15 +164,16 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "white",
   },
+  assigneeAvatarOverlap: {
+    marginLeft: -8,
+  },
   dateContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   dateText: {
     marginLeft: 4,
-    color: "#666",
     fontSize: 12,
+    color: "#666",
   },
 });
-
-export default Tasks;
