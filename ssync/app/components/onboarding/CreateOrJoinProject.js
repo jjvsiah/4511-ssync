@@ -11,7 +11,7 @@ import 'nativewind';
 const CreateOrJoinProject = () => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [joinModalVisible, setJoinModalVisible] = useState(false); // New state for Join Modal
-
+  const [selectedProject, setSelectedProject] = useState(null);
   const navigation = useNavigation();
 
   const handleCreateProject = async (projectName, description) => {
@@ -31,10 +31,7 @@ const CreateOrJoinProject = () => {
         if (user.email === loggedInUser) {
           return {
             ...user,
-            projects: [
-              ...(user.projects || []), // Do not overwrite existing projects
-              { projectName, description },
-            ],
+            projects: [...(user.projects || []), { projectName, description }],
           };
         }
         return user;
@@ -44,9 +41,14 @@ const CreateOrJoinProject = () => {
       await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
       console.log('Project Created:', projectName, description);
 
+      setSelectedProject({ projectName, description });
+
       // Navigate to the project feed
       setCreateModalVisible(false);
-      navigation.navigate('feed');
+      navigation.navigate('feed', {
+        projectName,
+        description,
+      });
     } catch (error) {
       console.error('Error creating project:', error);
     }
