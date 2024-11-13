@@ -47,6 +47,7 @@ const login = () => {
         (user) => user.email === email && user.password === password
       );
       if (user) {
+        await AsyncStorage.setItem('isLoggedIn', 'true');
         router.push('/home');
       } else {
         Alert.alert('Invalid Credentials', 'Email or password is incorrect');
@@ -84,8 +85,7 @@ const login = () => {
         />
       </View>
 
-      {/* Forgot Password Link - to implement */}
-      {/* <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}> */}
+      {/* Forgot Password Link - static feature */}
       <Text className='text-sm font-ibold mb-16'>Forgot Password?</Text>
       {/* </TouchableOpacity> */}
 
