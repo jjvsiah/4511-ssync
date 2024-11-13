@@ -5,16 +5,19 @@ import { useNavigation } from '@react-navigation/native';
 import CreateProjectModal from './CreateProjectModal';
 import JoinProjectModal from './JoinProjectModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import 'nativewind';
 
 const CreateOrJoinProject = () => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [joinModalVisible, setJoinModalVisible] = useState(false); // New state for Join Modal
-
+  const [userProjects, setUserProjects] = useState([]);
   const navigation = useNavigation();
 
-  const handleCreateProject = async (projectName, description) => {
+  const generateProjectCode = () => {
+    return Math.random().toString(36).substr(2, 8).toUpperCase(); // Generates 8-character alphanumeric code
+  };
+
+  const handleCreateProject = async (newProject) => {
     try {
       // Get the current user from AsyncStorage
       const loggedInUser = await AsyncStorage.getItem('loggedInUser');
@@ -26,15 +29,25 @@ const CreateOrJoinProject = () => {
       const existingUsers = await AsyncStorage.getItem('users');
       const users = existingUsers ? JSON.parse(existingUsers) : [];
 
+      const { projectName, description } = newProject;
+      const projectCode = generateProjectCode();
+
+      const project = {
+        id: projectCode,
+        name: projectName,
+        description: description,
+        posts: [],
+      };
+
+      storeProject(project);
+
       // Find user and update their project list
       const updatedUsers = users.map((user) => {
         if (user.email === loggedInUser) {
           return {
             ...user,
-            projects: [
-              ...(user.projects || []), // Do not overwrite existing projects
-              { projectName, description },
-            ],
+            projects: [...(user.projects || []), projectCode],
+            selectedProject: projectCode,
           };
         }
         return user;
@@ -49,6 +62,28 @@ const CreateOrJoinProject = () => {
       navigation.navigate('feed');
     } catch (error) {
       console.error('Error creating project:', error);
+    }
+  };
+
+  const storeProject = async (project) => {
+    try {
+      // Retrieve the existing projects list
+      const existingProjects = await AsyncStorage.getItem('projects');
+      let projects = [];
+
+      // Parse any existing projects, else make a new array
+      if (existingProjects) {
+        projects = JSON.parse(existingProjects);
+      }
+
+      // Add the new project to the list
+      projects.push(project);
+
+      // Save the updated list back to AsyncStorage
+      await AsyncStorage.setItem('projects', JSON.stringify(projects));
+      console.log('Project added:', project);
+    } catch (error) {
+      console.error('Error storing project:', error);
     }
   };
 
