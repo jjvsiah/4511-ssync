@@ -1,77 +1,34 @@
-import {
-  View,
-  Text,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Dimensions,
-} from "react-native";
-import React from "react";
-import { useRouter, Link } from "expo-router";
-import "nativewind"; // This ensures nativewind is properly loaded
-const { width, height } = Dimensions.get("window");
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const App = () => {
+const Index = () => {
   const router = useRouter();
-  return (
-    <View className="flex-1 justify-end  items-center bg-[#8EC9E6]">
-      <View className="pb-[20px]">
-        <Image
-          source={require("../assets/images/ssync-welcome-img.png")}
-          className="mb-[10px]"
-          style={styles.mainImage}
-        />
-      </View>
-      <View className="w-full rounded-3xl bg-white px-4 pb-[100px] pt-[40px]">
-        <Text className="font-semibold font-psemibold text-4xl mb-6 text-center">
-          Welcome to SSync!
-        </Text>
-        <Text className="font-iregular text-xl text-center mx-auto mb-8 max-w-[260px]">
-          Discover endless collaboration potential for your team
-        </Text>
-        <View className="flex-row justify-between gap-16 max-w-[320px] mx-auto">
-          <TouchableOpacity
-            onPress={() => router.push("/login")}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Log in</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push("/signup")}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Sign up</Text>
-          </TouchableOpacity>
-        </View>
+  const [isLoading, setIsLoading] = useState(true);
 
-        <Link href="/home" style={{ color: "blue" }}>
-          Home
-        </Link>
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+      if (isLoggedIn === 'true') {
+        router.replace('/home', undefined, { animation: 'none' }); // Navigate to home if logged in
+      } else {
+        router.replace('/OnboardingMain', undefined, { animation: 'none' }); // Navigate to onboarding if not logged in
+      }
+    };
+
+    checkLoginStatus();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size='large' color='#275BBC' />
       </View>
-      <StatusBar style="auto" />
-    </View>
-  );
+    );
+  }
+
+  return null;
 };
 
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: "#275BBC",
-    paddingVertical: 12,
-    borderRadius: 50,
-    alignItems: "center",
-    flex: 1,
-  },
-  buttonText: {
-    color: "white",
-    fontFamily: "Inter-Bold",
-    fontSize: 20,
-    textAlign: "center",
-  },
-  mainImage: {
-    width,
-    height: height * 0.45,
-  },
-});
-
-export default App;
+export default Index;
