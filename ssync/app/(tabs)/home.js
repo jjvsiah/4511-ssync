@@ -1,8 +1,19 @@
-import { View, Text } from 'react-native';
+import { View, Text, Button, Alert } from 'react-native';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateOrJoinProject from '../components/onboarding/CreateOrJoinProject';
 import { useNavigation } from '@react-navigation/native';
+
+// const clearStorage = async () => {
+//   try {
+//     await AsyncStorage.clear();
+//     Alert.alert('Success', 'Storage cleared!');
+//     console.log('Storage cleared!');
+//   } catch (e) {
+//     Alert.alert('Error', 'Error clearing AsyncStorage');
+//     console.error('Error clearing AsyncStorage', e);
+//   }
+// };
 
 const home = () => {
   const [projects, setProjects] = useState([]);
@@ -38,6 +49,9 @@ const home = () => {
 
   return (
     <View className='flex-1 justify-center items-center'>
+      {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Button title='Clear AsyncStorage' onPress={clearStorage} />
+      </View> */}
       {projects.length === 0 ? (
         // If projects then show the CreateOrJoinProject component
         <CreateOrJoinProject />
