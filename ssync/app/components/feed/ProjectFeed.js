@@ -160,10 +160,6 @@ const ProjectFeed = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Retrieve posts from AsyncStorage
-        // const existingPosts = await AsyncStorage.getItem('posts');
-        // const postsData = existingPosts ? JSON.parse(existingPosts) : {};
-
         // Access posts for the current project.id
         const projectPosts = project[posts] || [];
         console.log(project);
@@ -183,26 +179,6 @@ const ProjectFeed = () => {
     }
   }, [project]);
 
-  // useEffect(() => {
-  //   const fetchUserNames = async () => {
-  //     const userEmails = posts.map((post) => post.userEmail); // Get the emails from posts
-  //     const fetchedUserNames = {};
-
-  //     // Fetch user names for all users in posts
-  //     for (const email of userEmails) {
-  //       if (!fetchedUserNames[email]) {
-  //         fetchedUserNames[email] = await getUserNameByEmail(email.email);
-  //       }
-  //     }
-
-  //     setUserNames(fetchedUserNames); // Set all the usernames to state
-  //   };
-
-  //   if (posts != undefined && posts.length > 0) {
-  //     fetchUserNames(); // Only fetch if there are posts
-  //   }
-  // }, [posts]); // Re-run this when posts are updated
-
   const toggleMenu = () => {
     console.log('pressing');
     setIsMenuOpen(!isMenuOpen);
@@ -215,7 +191,7 @@ const ProjectFeed = () => {
   };
 
   const toggleAddPostModal = () => {
-    console.log('TOGGLING!!');
+    // console.log('TOGGLING!!');
     setIsAddPostModalVisible(!isAddPostModalVisible);
     console.log(isAddPostModalVisible);
   };
@@ -227,10 +203,8 @@ const ProjectFeed = () => {
     }
 
     const userName = await getUserNameByEmail(loggedInUserEmail);
-    console.log('username: ' + userName.name);
+    // console.log('username: ' + userName.name);
 
-    // const postWithUser = { ...newPost, userEmail: loggedInUserEmail };
-    // setPosts((prevPosts) => [...prevPosts, postWithUser]);
     const postWithUserDetails = {
       ...newPost,
       userEmail: loggedInUserEmail,
@@ -238,11 +212,6 @@ const ProjectFeed = () => {
     };
 
     handleAddPostToProject(postWithUserDetails);
-
-    // Clear the modal after adding the post
-
-    // project how do we add smth to project? to the inside of it
-
     toggleAddPostModal();
   };
 
@@ -356,27 +325,6 @@ const ProjectFeed = () => {
               );
             })
           )}
-          {/* {posts.map((post, index) => {
-            const userName = userNames[post.userEmail] || 'Loading...'; // Use state for userName
-
-            // const postDate = post.timestamp;
-            const postDateFormatted = formattedDate(post.timestamp);
-
-            // const formattedDate = `${postDate.getDate()}/${
-            //   postDate.getMonth() + 1
-            // }/${postDate.getFullYear()} - ${postDate.getHours()}:${postDate.getMinutes()}`;
-
-            return (
-              <View key={index} style={styles.postCard}>
-                <View style={styles.postHeader}>
-                  <Text style={styles.userName}>{userName}</Text>
-                  <Text style={styles.postDate}>{postDateFormatted}</Text>
-                </View>
-                <Text style={styles.postTitle}>{post.title}</Text>
-                <Text style={styles.postBody}>{post.body}</Text>
-              </View>
-            );
-          })} */}
         </View>
       </ScrollView>
 
