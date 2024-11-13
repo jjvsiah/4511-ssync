@@ -61,6 +61,26 @@ export const staticUsers = [
             isComplete: false,
             progress: 0,
           },
+          {
+            id: 3,
+            type: "poll",
+            title: "Design System Preferences",
+            options: [
+              { id: 1, text: "Material Design" },
+              { id: 2, text: "Custom Design System" },
+              { id: 3, text: "Tailwind CSS" },
+            ],
+          },
+          {
+            id: 4,
+            type: "poll",
+            title: "Sprint Planning Day",
+            options: [
+              { id: 1, text: "Monday" },
+              { id: 2, text: "Wednesday" },
+              { id: 3, text: "Friday" },
+            ],
+          },
         ],
       },
     ],
@@ -100,6 +120,16 @@ export const staticUsers = [
             subtasks: [],
             isComplete: false,
             progress: 0,
+          },
+          {
+            id: 5,
+            type: "poll",
+            title: "Tech Stack Selection",
+            options: [
+              { id: 1, text: "React Native" },
+              { id: 2, text: "Flutter" },
+              { id: 3, text: "Native (iOS/Android)" },
+            ],
           },
         ],
       },

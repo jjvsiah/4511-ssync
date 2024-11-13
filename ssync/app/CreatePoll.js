@@ -60,26 +60,22 @@ const CreatePoll = () => {
 
       const currentUser = JSON.parse(currentUserData);
 
-      // Simplified poll object with only necessary fields
       const newPoll = {
         id: Date.now().toString(),
-        type: "poll", // Keep this to identify as poll
-        question: question.trim(),
-        options: validOptions.map((option) => ({
-          text: option,
+        type: "poll",
+        title: question.trim(), // Changed from question to title to match the display component
+        options: validOptions.map((text) => ({
+          text,
           votes: 0,
         })),
         voters: [],
         created: new Date().toISOString(),
       };
 
-      // Add the poll to the first project's tasks array
       if (currentUser.projects && currentUser.projects.length > 0) {
         currentUser.projects[0].tasks.push(newPoll);
-
         await AsyncStorage.setItem("currentUser", JSON.stringify(currentUser));
 
-        // Update all users
         const usersData = await AsyncStorage.getItem("users");
         if (usersData) {
           const users = JSON.parse(usersData);
