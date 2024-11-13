@@ -203,28 +203,11 @@ const CreateTask = () => {
           <Ionicons name="add-circle" size={24} color="#275BBC" />
           <Text style={styles.addSubtaskText}>Add subtask</Text>
         </TouchableOpacity>
+
+        {/* Rest of your existing fields */}
+        {/* ... */}
       </ScrollView>
 
-      {/* Assignee  */}
-      <Text style={styles.label}>Assign to:</Text>
-      <View style={styles.assigneeContainer}>
-        {assignedUsers.map((user) => (
-          <View key={user.id} style={styles.assigneeChip}>
-            <Image source={{ uri: user.avatar }} style={styles.avatar} />
-            <Text style={styles.assigneeName}>{user.name}</Text>
-            <TouchableOpacity style={styles.removeButton}>
-              <Text>
-                <Ionicons name="close" size={20} color="#666" />
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-        <TouchableOpacity style={styles.addAssigneeButton}>
-          <Text>
-            <Ionicons name="add" size={24} color="#4B6BF6" />
-          </Text>
-        </TouchableOpacity>
-      </View>
       {/* Platform Selection Modal */}
       <Modal
         visible={platformModalVisible}
@@ -256,6 +239,28 @@ const CreateTask = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Assignee  */}
+      <Text style={styles.label}>Assign to:</Text>
+      <View style={styles.assigneeContainer}>
+        {assignedUsers.map((user) => (
+          <View key={user.id} style={styles.assigneeChip}>
+            <Image source={{ uri: user.avatar }} style={styles.avatar} />
+            <Text style={styles.assigneeName}>{user.name}</Text>
+            <TouchableOpacity style={styles.removeButton}>
+              <Text>
+                <Ionicons name="close" size={20} color="#666" />
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+        <TouchableOpacity style={styles.addAssigneeButton}>
+          <Text>
+            <Ionicons name="add" size={24} color="#4B6BF6" />
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <TouchableOpacity style={styles.createButton} onPress={handleCreateTask}>
         <Ionicons name="add" size={24} color="white" />
         <Text style={styles.createButtonText}>Create Task</Text>
