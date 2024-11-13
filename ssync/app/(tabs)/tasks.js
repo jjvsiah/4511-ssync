@@ -6,11 +6,14 @@ import {
   SafeAreaView,
 } from "react-native";
 import React, { useState } from "react";
-import TaskModal from "../components/tasks/modal";
+import TaskModal from "../components/tasks/TaskModal";
+import TaskItem from "../components/tasks/TaskItem";
+import { useRouter } from "expo-router";
 
 const Tasks = () => {
   const [activeButton, setActiveButton] = useState("complete");
   const [modalVisible, setModalVisible] = useState(false);
+  const router = useRouter();
 
   const buttons = [
     { id: "complete", label: "Complete" },
@@ -30,10 +33,23 @@ const Tasks = () => {
       : "text-gray-500 text-center font-psemibold";
   };
 
+  // Updated navigation function with error handling
+  const onNewTaskPress = () => {
+    console.log("successfully navigated to new task");
+    router.push("/create-task");
+    setModalVisible(false);
+  };
+
   return (
     <SafeAreaView className="bg-white h-full">
       <View className="flex-row justify-between items-center px-8 pt-4">
         <Text className="font-pregular text-3xl text-center flex-1">Tasks</Text>
+        {/* <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity> */}
         <TouchableOpacity
           className="object-right"
           onPress={() => setModalVisible(true)}
@@ -53,10 +69,11 @@ const Tasks = () => {
           </TouchableOpacity>
         ))}
       </View>
-      {/* Modal */}
+      <TaskItem />
       <TaskModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+        onNewTaskPress={onNewTaskPress}
       />
     </SafeAreaView>
   );

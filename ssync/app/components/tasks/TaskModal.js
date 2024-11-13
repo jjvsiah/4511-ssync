@@ -13,7 +13,7 @@ const TaskModal = ({ visible, onClose, onNewTaskPress }) => {
           <TouchableOpacity
             className="flex-row"
             onPress={() => {
-              onNewTaskPress(); // Navigate to CreateTaskScreen
+              onNewTaskPress(); // Navigate to createTask
               onClose(); // Close the modal
             }}
           >
