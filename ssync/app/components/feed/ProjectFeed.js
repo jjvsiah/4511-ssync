@@ -22,6 +22,7 @@ const ProjectFeed = () => {
   const [error, setError] = useState(null);
   const [projectsList, setProjectsList] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [isAddPostModalVisible, setIsAddPostModalVisible] = useState(false);
   const [loggedInUserEmail, setLoggedInUserEmail] = useState(null);
