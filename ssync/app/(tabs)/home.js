@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,8 +15,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CreateOrJoinProject from '../components/onboarding/CreateOrJoinProject';
-import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -28,21 +25,9 @@ const AVATARS = {
   avatar2: require('../../assets/images/avatar2.png'),
 };
 
-// const clearStorage = async () => {
-//   try {
-//     await AsyncStorage.clear();
-//     Alert.alert('Success', 'Storage cleared!');
-//     console.log('Storage cleared!');
-//   } catch (e) {
-//     Alert.alert('Error', 'Error clearing AsyncStorage');
-//     console.error('Error clearing AsyncStorage', e);
-//   }
-// };
-
 const ProjectCard = ({ project }) => {
   const router = useRouter();
-  console.log('project1: ' + project);
-  const backgroundColor = project.name.toLowerCase().includes('java')
+  const backgroundColor = project.projectName.toLowerCase().includes('java')
     ? 'bg-[#E9E5FF]'
     : 'bg-[#B9E5FF]';
 
@@ -106,6 +91,8 @@ const CreateProjectModal = ({ visible, onClose, onCreateProject }) => {
       onClose();
     } catch (error) {
       Alert.alert('Error', 'Failed to create project');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -170,72 +157,10 @@ const CreateProjectModal = ({ visible, onClose, onCreateProject }) => {
   );
 };
 
-const loadProjects = async () => {
-  try {
-    const currentUserData = await AsyncStorage.getItem('currentUser');
-    if (currentUserData) {
-      const user = JSON.parse(currentUserData);
-      setProjects(user.projects || []);
-    }
-  } catch (error) {
-    console.error('Error loading projects:', error);
-    Alert.alert('Error', 'Failed to load projects');
-  }
-};
-
-const handleCreateProject = async (newProject) => {
-  try {
-    const currentUserData = await AsyncStorage.getItem('currentUser');
-    if (!currentUserData) throw new Error('No user logged in');
-
-    const currentUser = JSON.parse(currentUserData);
-    const projectToAdd = {
-      ...newProject,
-      id: Date.now().toString(),
-      tasks: [],
-      members: [{ id: currentUser.id, email: currentUser.email }],
-    };
-
-    // Update current user's projects
-    const updatedUser = {
-      ...currentUser,
-      projects: [...(currentUser.projects || []), projectToAdd],
-    };
-
-    await AsyncStorage.setItem('currentUser', JSON.stringify(updatedUser));
-
-    // Update projects in users array
-    const usersData = await AsyncStorage.getItem('users');
-    if (usersData) {
-      const users = JSON.parse(usersData);
-      const updatedUsers = users.map((user) =>
-        user.id === currentUser.id ? updatedUser : user
-      );
-      await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
-    }
-
-    setProjects(updatedUser.projects);
-  } catch (error) {
-    console.error('Error creating project:', error);
-    throw error;
-  }
-};
-
-// if (isLoading) {
-//   return (
-//     <View className='flex-1 justify-center items-center bg-white'>
-//       <ActivityIndicator size='large' color='#275BBC' />
-//     </View>
-//   );
-// }
-
-// export default home;
-
-const home = () => {
+const Home = () => {
   const [projects, setProjects] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  // const [isLoading, setIsLoading] = useState(true);
-  const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadProjects();
@@ -246,119 +171,111 @@ const home = () => {
       const currentUserData = await AsyncStorage.getItem('currentUser');
       if (currentUserData) {
         const user = JSON.parse(currentUserData);
-        // console.log('USER PROJECTS - ' + user.projects);
         setProjects(user.projects || []);
       }
     } catch (error) {
       console.error('Error loading projects:', error);
       Alert.alert('Error', 'Failed to load projects');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Check for stored projects
-  // useEffect(() => {
-  //   const fetchProjects = async () => {
-  //     try {
-  //       const loggedInUser = await AsyncStorage.getItem('loggedInUser');
-  //       if (!loggedInUser) return;
+  const handleCreateProject = async (newProject) => {
+    try {
+      const currentUserData = await AsyncStorage.getItem('currentUser');
+      if (!currentUserData) throw new Error('No user logged in');
 
-  //       const existingUsers = await AsyncStorage.getItem('users');
-  //       const users = existingUsers ? JSON.parse(existingUsers) : [];
-  //       const user = users.find((u) => u.email === loggedInUser);
+      const currentUser = JSON.parse(currentUserData);
+      const projectToAdd = {
+        ...newProject,
+        id: Date.now().toString(),
+        tasks: [],
+        members: [{ id: currentUser.id, email: currentUser.email }],
+      };
 
-  //       if (user && user.projects) {
-  //         setProjects(user.projects); // Set projects of the logged-in user
-  //       }
-  //     } catch (error) {
-  //       console.error('Error loading projects:', error);
-  //     }
-  //   };
+      // Update current user's projects
+      const updatedUser = {
+        ...currentUser,
+        projects: [...(currentUser.projects || []), projectToAdd],
+      };
 
-  //   fetchProjects(); // Fetch projects when component mounts
-  // }, []);
+      await AsyncStorage.setItem('currentUser', JSON.stringify(updatedUser));
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
+      // Update projects in users array
+      const usersData = await AsyncStorage.getItem('users');
+      if (usersData) {
+        const users = JSON.parse(usersData);
+        const updatedUsers = users.map((user) =>
+          user.id === currentUser.id ? updatedUser : user
+        );
+        await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
+      }
+
+      setProjects(updatedUser.projects);
+    } catch (error) {
+      console.error('Error creating project:', error);
+      throw error;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View className='flex-1 justify-center items-center bg-white'>
+        <ActivityIndicator size='large' color='#275BBC' />
+      </View>
+    );
+  }
 
   return (
-    <View className='flex-1 justify-center items-center'>
-      {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Button title='Clear AsyncStorage' onPress={clearStorage} />
-      </View> */}
-      {projects.length === 0 ? (
-        // If projects then show the CreateOrJoinProject component
-        <CreateOrJoinProject />
-      ) : (
-        // If projects then render calendar and projects view
-        // <Text>Projects exist</Text>
-        <SafeAreaView className='flex-1 bg-white'>
-          <ScrollView
-            className='flex-1 px-6'
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps='handled'>
-            <View className='flex-row justify-between items-center mb-6 mt-4'>
-              <Text className='text-3xl font-semibold'>Your Projects</Text>
-              <TouchableOpacity
-                className='bg-[#275BBC] w-10 h-10 rounded-full items-center justify-center'
-                onPress={() => setModalVisible(true)}>
-                <Ionicons name='add' size={24} color='white' />
-              </TouchableOpacity>
+    <SafeAreaView className='flex-1 bg-white'>
+      <ScrollView
+        className='flex-1 px-6'
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps='handled'>
+        <View className='flex-row justify-between items-center mb-6 mt-4'>
+          <Text className='text-3xl font-semibold'>Your Projects</Text>
+          <TouchableOpacity
+            className='bg-[#275BBC] w-10 h-10 rounded-full items-center justify-center'
+            onPress={() => setModalVisible(true)}>
+            <Ionicons name='add' size={24} color='white' />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className='mb-8'>
+          {projects.length > 0 ? (
+            projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))
+          ) : (
+            <View
+              className='justify-center items-center'
+              style={{ width: cardWidth }}>
+              <Text className='text-gray-500 text-center'>
+                No projects yet. Create one to get started!
+              </Text>
             </View>
+          )}
+        </ScrollView>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className='mb-8'>
-              {projects.length > 0 ? (
-                projects.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
-                ))
-              ) : (
-                <View
-                  className='justify-center items-center'
-                  style={{ width: cardWidth }}>
-                  <Text className='text-gray-500 text-center'>
-                    No projects yet. Create one to get started!
-                  </Text>
-                </View>
-              )}
-            </ScrollView>
+        <Text className='text-3xl font-semibold mb-4'>Calendar</Text>
+        <Image
+          source={require('../../assets/images/calendar.png')}
+          className='w-[336] h-[306]'
+          resizeMode='contain'
+        />
+      </ScrollView>
 
-            <Text className='text-3xl font-semibold mb-4'>Calendar</Text>
-            <Image
-              source={require('../../assets/images/calendar.png')}
-              className='w-[336] h-[306]'
-              resizeMode='contain'
-            />
-          </ScrollView>
-
-          <CreateProjectModal
-            visible={modalVisible}
-            onClose={() => setModalVisible(false)}
-            onCreateProject={handleCreateProject}
-          />
-        </SafeAreaView>
-      )}
-    </View>
+      <CreateProjectModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onCreateProject={handleCreateProject}
+      />
+    </SafeAreaView>
   );
 };
 
-// ----------
-
-// const Home = () => {
-//   const [projects, setProjects] = useState([]);
-//   // const [modalVisible, setModalVisible] = useState(false);
-//   // const [isLoading, setIsLoading] = useState(true);
-
-//   useEffect(() => {
-//     loadProjects();
-//   }, []);
-
-//   return (
-//   );
-// };
-
-export default home;
+export default Home;
