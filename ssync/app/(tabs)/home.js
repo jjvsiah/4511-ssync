@@ -167,9 +167,9 @@ const Home = () => {
   const loadProjects = async () => {
     try {
       const currentUserData = await AsyncStorage.getItem('loggedInUser');
-      console.log('got it ' + currentUserData);
+      // console.log('got it ' + currentUserData);
       if (currentUserData) {
-        console.log('here');
+        // console.log('here');
         const user = JSON.parse(currentUserData);
         setProjects(user.projects || []);
       }

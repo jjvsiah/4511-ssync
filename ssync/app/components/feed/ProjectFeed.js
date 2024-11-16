@@ -87,37 +87,22 @@ const ProjectFeed = () => {
     try {
       currentUser.selectedProject = newProjectId;
 
-      const usersData = await AsyncStorage.getItem('users');
-      if (usersData) {
-        // Parse the data into an array of users
-        const users = JSON.parse(usersData);
+      // Save the updated users array back to AsyncStorage
+      await AsyncStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+      setCurrentUser(currentUser);
 
-        // Update the current user by replacing the user object with the updated currentUser
-        const updatedUsers = users.map((user) =>
-          user.id === currentUser.id ? currentUser : user
+      // Fetch the new selected project and update the project state
+      const selectedProject = currentUser.projects.find(
+        (project) => project.id === newProjectId
+      );
+
+      if (selectedProject) {
+        setProject(selectedProject);
+        const sortedPosts = selectedProject.posts.sort(
+          (a, b) => new Date(b.dateTime) - new Date(a.dateTime)
         );
-
-        // Save the updated users array back to AsyncStorage
-        await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
-
-        setCurrentUser(currentUser);
-
-        console.log(
-          `User ${currentUser.name}'s selected project changed to ID: ${newProjectId}`
-        );
-      } else {
-        console.log('No users data found in AsyncStorage');
+        setPosts(sortedPosts);
       }
-
-      // await AsyncStorage.setItem(
-      //   'users',
-      //   JSON.stringify([
-      //     {
-      //       ...currentUser,
-      //       projects: updatedProjects,
-      //     },
-      //   ])
-      // );
     } catch (error) {
       console.error('Error changing selected project:', error);
     }
@@ -192,13 +177,14 @@ const ProjectFeed = () => {
   return (
     <View className='bg-[#e7e6eb]'>
       <Animated.View
-        style={[styles.menu, { transform: [{ translateX: slideAnim }] }]}>
+        style={[styles.menu, { transform: [{ translateX: slideAnim }] }]}
+        className='shadow-lg'>
         <ScrollView className='mt-12'>
           <TouchableOpacity
             className='absolute left-5 top-4 z-15'
             onPress={toggleMenu}>
             <Image
-              source={require('../../../assets/icons/cross-black.png')} // Adjust the path as needed
+              source={require('../../../assets/icons/cross-black.png')}
               className='w-9 h-9'
             />
           </TouchableOpacity>
@@ -214,6 +200,7 @@ const ProjectFeed = () => {
                 className='rounded-3xl mx-8 py-5 mb-5'
                 onPress={() => {
                   changeSelectedProject(proj.id);
+                  toggleMenu();
                   console.log(`Navigating to project: ${proj.projectName}`);
                 }}>
                 <Text className='text-center text-xl font-psemibold'>
@@ -369,9 +356,6 @@ const ProjectFeed = () => {
 };
 
 const styles = StyleSheet.create({
-  sidebarContainer: {
-    backgroundColor: '#e7e6eb',
-  },
   menu: {
     position: 'absolute',
     top: 0,
@@ -382,66 +366,9 @@ const styles = StyleSheet.create({
     zIndex: 10,
     elevation: 10,
   },
-  menuItems: {
-    marginTop: 50,
-  },
-  menuTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    padding: 10,
-    paddingTop: 60,
-    textAlign: 'center',
-  },
-  projectItem: {
-    borderRadius: 10, // Rounded corners
-    padding: 15,
-    marginHorizontal: 15,
-    marginVertical: 5,
-  },
-  menuItemText: {
-    fontSize: 18,
-  },
   contentContainer: {
     flexGrow: 1,
     backgroundColor: '#e7e6eb',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    zIndex: 15,
-  },
-  postCard: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  postDate: {
-    fontSize: 12,
-    color: '#888',
-  },
-  postTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  postBody: {
-    fontSize: 14,
-    color: '#333',
   },
 });
 
