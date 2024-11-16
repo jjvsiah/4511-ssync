@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import TaskModal from "../components/tasks/TaskModal";
-import FilterModal from "../components/tasks/FilterModal";
-import TaskItem from "../components/tasks/TaskItem";
-import { useRouter, useFocusEffect } from "expo-router";
-import { Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import TaskModal from '../components/tasks/TaskModal';
+import FilterModal from '../components/tasks/FilterModal';
+import TaskItem from '../components/tasks/TaskItem';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 const Tasks = () => {
-  const [activeButton, setActiveButton] = useState("todo");
+  const [activeButton, setActiveButton] = useState('todo');
   const [modalVisible, setModalVisible] = useState(false);
   const [rawTasks, setRawTasks] = useState([]); // Store unfiltered tasks
   const [displayedTasks, setDisplayedTasks] = useState([]); // Store filtered tasks
@@ -23,8 +23,8 @@ const Tasks = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [filterSettings, setFilterSettings] = useState({
-    dateOrder: "",
-    priorityOrder: "",
+    dateOrder: '',
+    priorityOrder: '',
     assignedToMe: false,
   });
 
@@ -34,7 +34,7 @@ const Tasks = () => {
 
     // Filter by assignment
     if (filterSettings.assignedToMe) {
-      const currentUserEmail = await AsyncStorage.getItem("loggedInUser");
+      const currentUserEmail = await AsyncStorage.getItem('loggedInUser');
       filteredTasks = filteredTasks.filter((task) =>
         task.assignees.some((assignee) => assignee.email === currentUserEmail)
       );
@@ -45,7 +45,7 @@ const Tasks = () => {
       filteredTasks.sort((a, b) => {
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
-        return filterSettings.dateOrder === "newToOld"
+        return filterSettings.dateOrder === 'newToOld'
           ? dateB - dateA
           : dateA - dateB;
       });
@@ -62,7 +62,7 @@ const Tasks = () => {
       filteredTasks.sort((a, b) => {
         const priorityA = priorityValues[a.priority] || 0;
         const priorityB = priorityValues[b.priority] || 0;
-        return filterSettings.priorityOrder === "highToLow"
+        return filterSettings.priorityOrder === 'highToLow'
           ? priorityB - priorityA
           : priorityA - priorityB;
       });
@@ -73,7 +73,7 @@ const Tasks = () => {
         return renderEmptyState();
       }
 
-      if (activeButton === "polls") {
+      if (activeButton === 'polls') {
         return displayedTasks.map((poll) => (
           <PollCard
             key={poll.id}
@@ -95,9 +95,9 @@ const Tasks = () => {
   };
 
   const buttons = [
-    { id: "complete", label: "COMPLETE" },
-    { id: "todo", label: "TO DO" },
-    { id: "polls", label: "POLLS" },
+    { id: 'complete', label: 'COMPLETE' },
+    { id: 'todo', label: 'TO DO' },
+    { id: 'polls', label: 'POLLS' },
   ];
 
   // Load tasks when screen comes into focus
@@ -110,7 +110,7 @@ const Tasks = () => {
   // Load and filter tasks
   const loadUserTasks = async () => {
     try {
-      const currentUserData = await AsyncStorage.getItem("currentUser");
+      const currentUserData = await AsyncStorage.getItem('loggedInUser');
       if (currentUserData) {
         const user = JSON.parse(currentUserData);
 
@@ -127,14 +127,14 @@ const Tasks = () => {
         );
 
         let filteredItems;
-        if (activeButton === "polls") {
+        if (activeButton === 'polls') {
           // Filter only polls
-          filteredItems = allTasks.filter((item) => item.type === "poll");
+          filteredItems = allTasks.filter((item) => item.type === 'poll');
         } else {
           // Filter tasks (non-polls) based on completion status
           filteredItems = allTasks.filter((item) => {
-            if (item.type === "poll") return false; // Exclude polls from tasks view
-            return activeButton === "complete"
+            if (item.type === 'poll') return false; // Exclude polls from tasks view
+            return activeButton === 'complete'
               ? item.isComplete
               : !item.isComplete;
           });
@@ -146,8 +146,8 @@ const Tasks = () => {
         }
         // Filter based on active button (complete/todo)
         const buttonFilteredTasks = allTasks.filter((task) => {
-          if (activeButton === "complete") return task.isComplete;
-          if (activeButton === "todo") return !task.isComplete;
+          if (activeButton === 'complete') return task.isComplete;
+          if (activeButton === 'todo') return !task.isComplete;
           return false;
         });
 
@@ -158,7 +158,7 @@ const Tasks = () => {
         setDisplayedTasks(filteredTasks);
       }
     } catch (error) {
-      console.error("Error loading tasks:", error);
+      console.error('Error loading tasks:', error);
       setRawTasks([]);
       setDisplayedTasks([]);
     }
@@ -179,72 +179,69 @@ const Tasks = () => {
 
   const getButtonStyle = (buttonId) => {
     return activeButton === buttonId
-      ? "w-1/3 mt-4 bg-blue-500 p-3 rounded-full"
-      : "w-1/3 mt-4 p-3";
+      ? 'w-1/3 mt-4 bg-blue-500 p-3 rounded-full'
+      : 'w-1/3 mt-4 p-3';
   };
 
   const getTextStyle = (buttonId) => {
     return activeButton === buttonId
-      ? "text-white text-center font-psemibold"
-      : "text-gray-500 text-center font-psemibold";
+      ? 'text-white text-center font-psemibold'
+      : 'text-gray-500 text-center font-psemibold';
   };
 
   const onNewTaskPress = () => {
-    router.push("/create-task");
+    router.push('/create-task');
     setModalVisible(false);
   };
 
   const onNewMeetingPress = () => {
-    router.push("/ScheduleMeeting");
+    router.push('/ScheduleMeeting');
     setModalVisible(false);
   };
 
   const onNewPollPress = () => {
-    router.push("/CreatePoll");
+    router.push('/CreatePoll');
     setModalVisible(false);
   };
 
   // Add empty state
   const renderEmptyState = () => (
-    <View className="flex-1 justify-center items-center p-8">
-      <Text className="text-gray-500 text-center text-lg mb-4">
+    <View className='flex-1 justify-center items-center p-8'>
+      <Text className='text-gray-500 text-center text-lg mb-4'>
         No tasks found. Create a new task to get started!
       </Text>
     </View>
   );
 
   return (
-    <SafeAreaView className="bg-white h-full">
-      <View className="flex-row justify-between items-center px-8 pt-4">
-        <Text className="font-pregular text-3xl text-center flex-1">Tasks</Text>
+    <SafeAreaView className='bg-white h-full'>
+      <View className='flex-row justify-between items-center px-8 pt-4'>
+        <Text className='font-pregular text-3xl text-center flex-1'>Tasks</Text>
         <TouchableOpacity
-          className="object-right"
-          onPress={() => setModalVisible(true)}
-        >
-          <Image source={require("../../assets/images/AddTask.png")} />
+          className='object-right'
+          onPress={() => setModalVisible(true)}>
+          <Image source={require('../../assets/images/AddTask.png')} />
         </TouchableOpacity>
       </View>
 
-      <View className="flex-row px-6 pt-2">
+      <View className='flex-row px-6 pt-2'>
         {buttons.map((button) => (
           <TouchableOpacity
             key={button.id}
             className={getButtonStyle(button.id)}
-            onPress={() => setActiveButton(button.id)}
-          >
+            onPress={() => setActiveButton(button.id)}>
             <Text className={getTextStyle(button.id)}>{button.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
       <TouchableOpacity
-        className="bg-[#8EC9E6] p-2 rounded-full flex-row items-center w-1/4 ml-4"
-        onPress={() => setFilterModalVisible(true)}
-      >
-        <Text className="text-[black] ml-4">Filter </Text>
-        <Ionicons name="filter" size={24} color="black" />
+        className='bg-[#8EC9E6] p-2 rounded-full flex-row items-center w-1/4 ml-4'
+        onPress={() => setFilterModalVisible(true)}>
+        <Text className='text-[black] ml-4'>Filter </Text>
+        <Ionicons name='filter' size={24} color='black' />
       </TouchableOpacity>
 
-      <ScrollView className="px-4 pt-4">
+      <ScrollView className='px-4 pt-4'>
         {displayedTasks.length > 0
           ? displayedTasks.map((task) => (
               <TaskItem

@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useNavigation } from '@react-navigation/native';
 import CreateProjectModal from './CreateProjectModal';
@@ -11,7 +12,8 @@ const CreateOrJoinProject = () => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [joinModalVisible, setJoinModalVisible] = useState(false); // New state for Join Modal
   const [userProjects, setUserProjects] = useState([]);
-  const navigation = useNavigation();
+  const nav = useNavigation();
+  const router = useRouter();
 
   const generateProjectCode = () => {
     return Math.random().toString(36).substr(2, 8).toUpperCase(); // Generates 8-character alphanumeric code
@@ -59,7 +61,8 @@ const CreateOrJoinProject = () => {
 
       // Navigate to the project feed
       setCreateModalVisible(false);
-      navigation.navigate('feed');
+      console.log('going to home');
+      router.push('/home');
     } catch (error) {
       console.error('Error creating project:', error);
     }
