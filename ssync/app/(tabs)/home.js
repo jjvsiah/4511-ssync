@@ -25,11 +25,9 @@ const AVATARS = {
   avatar2: require('../../assets/images/avatar2.png'),
 };
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, index }) => {
   const router = useRouter();
-  const backgroundColor = project.projectName.toLowerCase().includes('java')
-    ? 'bg-[#E9E5FF]'
-    : 'bg-[#B9E5FF]';
+  const backgroundColor = index % 2 === 0 ? 'bg-[#E9E5FF]' : 'bg-[#B9E5FF]';
 
   const memberCount = project.members?.length || 1;
 
@@ -249,8 +247,8 @@ const Home = () => {
           showsHorizontalScrollIndicator={false}
           className='mb-8'>
           {projects.length > 0 ? (
-            projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+            projects.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} />
             ))
           ) : (
             <View

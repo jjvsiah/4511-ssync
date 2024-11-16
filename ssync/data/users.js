@@ -9,6 +9,7 @@ export const staticUsers = [
     projects: [
       {
         id: 1,
+        projectCode: 'hymr3s',
         projectName: 'Website Redesign',
         description: 'Redesigning company website',
         posts: [
@@ -86,6 +87,49 @@ export const staticUsers = [
           },
         ],
       },
+      {
+        id: 2,
+        projectName: 'Mobile App',
+        description: 'Developing new mobile application',
+        projectCode: 'pik2m3',
+        posts: [
+          {
+            id: 1,
+            postName: 'User Flow Discussion',
+            content: 'Discussing the new user flow design.',
+            dateTime: '2024-10-17T12:30:00',
+            posterName: 'Mike',
+            posterEmail: 'mike@example.com',
+            profileIcon: 'https://i.pravatar.cc/100?img=3',
+          },
+        ],
+        tasks: [
+          {
+            id: 3,
+            title: 'Weekly Standup',
+            description: 'Team sync meeting',
+            platform: 'teams',
+            priority: 'Medium',
+            date: 'Tuesdays',
+            time: '14:30',
+            assignees: [
+              {
+                id: 2,
+                name: 'Jane',
+                avatar: 'https://i.pravatar.cc/100?img=2',
+              },
+              {
+                id: 3,
+                name: 'Mike',
+                avatar: 'https://i.pravatar.cc/100?img=3',
+              },
+            ],
+            subtasks: [],
+            isComplete: false,
+            progress: 0,
+          },
+        ],
+      },
     ],
   },
   {
@@ -100,6 +144,7 @@ export const staticUsers = [
         id: 2,
         projectName: 'Mobile App',
         description: 'Developing new mobile application',
+        projectCode: 'pik2m3',
         posts: [
           {
             id: 1,
