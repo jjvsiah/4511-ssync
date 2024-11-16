@@ -16,54 +16,36 @@ const AddPostModal = ({ visible, onClose, onAddPost }) => {
   const [postBody, setPostBody] = useState('');
   const [poster, setPoster] = useState('');
 
-  useEffect(() => {
-    const getPosterName = async () => {
+  const handleAddPost = async () => {
+    if (postTitle.trim() && postBody.trim()) {
       try {
-        // Get logged-in user email from AsyncStorage
+        // Retrieve logged-in user
         const loggedInUser = await AsyncStorage.getItem('loggedInUser');
+        const currentUser = JSON.parse(loggedInUser);
 
-        if (loggedInUser) {
-          // Retrieve the users array from AsyncStorage
-          const existingUsers = await AsyncStorage.getItem('users');
-          const users = existingUsers ? JSON.parse(existingUsers) : [];
+        if (currentUser) {
+          const currentDate = new Date();
+          const newPost = {
+            id: Date.now(), // Unique ID
+            postName: postTitle,
+            content: postBody,
+            dateTime: currentDate.toISOString(),
+            posterName: currentUser.name,
+            posterEmail: currentUser.email,
+            profileIcon: currentUser.avatar,
+          };
 
-          // Find the user by email
-          const user = users.find((u) => u.email === loggedInUser);
-          if (user) {
-            // Set the user's name as poster
-            console.log('THE USER - ' + user);
-            setPoster(user.name);
-          } else {
-            console.error('User not found.');
-          }
+          onAddPost(newPost);
+
+          setPostTitle('');
+          setPostBody('');
+          onClose();
         } else {
-          console.error('No logged-in user found.');
+          alert('Error: Unable to find the logged-in user.');
         }
       } catch (error) {
-        console.error('Error fetching poster name: ', error);
+        console.error('Error adding post:', error);
       }
-    };
-
-    getPosterName();
-  }, []);
-
-  const handleAddPost = () => {
-    if (postTitle.trim() && postBody.trim()) {
-      const currentDate = new Date();
-      const newPost = {
-        title: postTitle,
-        body: postBody,
-        timestamp: currentDate.toISOString(),
-        poster: poster, // Add the poster's name to the post
-      };
-
-      // Call onAddPost prop to add the post
-      onAddPost(newPost);
-
-      // Clear input fields and close the modal
-      setPostTitle('');
-      setPostBody('');
-      onClose();
     } else {
       alert('Please fill in both fields.');
     }

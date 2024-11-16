@@ -48,6 +48,8 @@ const login = () => {
       );
       if (user) {
         await AsyncStorage.setItem('isLoggedIn', 'true');
+        await AsyncStorage.setItem('loggedInUser', JSON.stringify(user)); // Store the entire user object
+        console.log('stored the user in async');
         router.push('/home');
       } else {
         Alert.alert('Invalid Credentials', 'Email or password is incorrect');

@@ -168,8 +168,10 @@ const Home = () => {
 
   const loadProjects = async () => {
     try {
-      const currentUserData = await AsyncStorage.getItem('currentUser');
+      const currentUserData = await AsyncStorage.getItem('loggedInUser');
+      console.log('got it ' + currentUserData);
       if (currentUserData) {
+        console.log('here');
         const user = JSON.parse(currentUserData);
         setProjects(user.projects || []);
       }
@@ -183,7 +185,7 @@ const Home = () => {
 
   const handleCreateProject = async (newProject) => {
     try {
-      const currentUserData = await AsyncStorage.getItem('currentUser');
+      const currentUserData = await AsyncStorage.getItem('loggedInUser');
       if (!currentUserData) throw new Error('No user logged in');
 
       const currentUser = JSON.parse(currentUserData);
@@ -200,7 +202,7 @@ const Home = () => {
         projects: [...(currentUser.projects || []), projectToAdd],
       };
 
-      await AsyncStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      await AsyncStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
 
       // Update projects in users array
       const usersData = await AsyncStorage.getItem('users');

@@ -2,12 +2,10 @@ import { View, Text } from 'react-native';
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreateOrJoinProject from '../components/onboarding/CreateOrJoinProject';
-// import { useNavigation } from '@react-navigation/native';
 import { useRouter, useNavigation } from 'expo-router';
 
 const diveInScreen = () => {
   const [projects, setProjects] = useState([]);
-//   const router = useRouter();
   const nav = useNavigation();
 
   useLayoutEffect(() => {
@@ -37,13 +35,6 @@ const diveInScreen = () => {
 
     fetchProjects(); // Fetch projects when component mounts
   }, []);
-
-  //   useLayoutEffect(() => {
-  //     router.setOptions({
-  //       headerShown: false,
-  //     });
-  //   }, [router]);
-
   return (
     <View className='flex-1 justify-center items-center'>
       {projects.length === 0 ? (
