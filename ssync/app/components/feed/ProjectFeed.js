@@ -83,10 +83,48 @@ const ProjectFeed = () => {
     fetchProjectData();
   }, []);
 
-  const toggleMenu = () => {
-    console.log('pressing');
-    setIsMenuOpen(!isMenuOpen);
+  const changeSelectedProject = async (newProjectId) => {
+    try {
+      currentUser.selectedProject = newProjectId;
 
+      const usersData = await AsyncStorage.getItem('users');
+      if (usersData) {
+        // Parse the data into an array of users
+        const users = JSON.parse(usersData);
+
+        // Update the current user by replacing the user object with the updated currentUser
+        const updatedUsers = users.map((user) =>
+          user.id === currentUser.id ? currentUser : user
+        );
+
+        // Save the updated users array back to AsyncStorage
+        await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
+
+        setCurrentUser(currentUser);
+
+        console.log(
+          `User ${currentUser.name}'s selected project changed to ID: ${newProjectId}`
+        );
+      } else {
+        console.log('No users data found in AsyncStorage');
+      }
+
+      // await AsyncStorage.setItem(
+      //   'users',
+      //   JSON.stringify([
+      //     {
+      //       ...currentUser,
+      //       projects: updatedProjects,
+      //     },
+      //   ])
+      // );
+    } catch (error) {
+      console.error('Error changing selected project:', error);
+    }
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
     Animated.timing(slideAnim, {
       toValue: isMenuOpen ? -250 : 0,
       duration: 300,
@@ -175,7 +213,7 @@ const ProjectFeed = () => {
                 style={{ backgroundColor }}
                 className='rounded-3xl mx-8 py-5 mb-5'
                 onPress={() => {
-                  // Handle navigation or project selection
+                  changeSelectedProject(proj.id);
                   console.log(`Navigating to project: ${proj.projectName}`);
                 }}>
                 <Text className='text-center text-xl font-psemibold'>
@@ -189,7 +227,7 @@ const ProjectFeed = () => {
 
       <View className='bg-white w-full pt-16 rounded-b-[30%]'>
         <TouchableOpacity
-          className='absolute left-5 left-[30px] top-[55px]'
+          className='absolute left-6 top-16'
           onPress={toggleMenu}>
           <Image
             source={require('../../../assets/icons/hamburger-menu.png')} // Adjust the path as needed
@@ -363,12 +401,6 @@ const styles = StyleSheet.create({
   menuItemText: {
     fontSize: 18,
   },
-  // projectText: {
-  //   fontSize: 16,
-  //   fontWeight: '600',
-  //   color: '#333',
-  //   textAlign: 'center',
-  // },
   contentContainer: {
     flexGrow: 1,
     backgroundColor: '#e7e6eb',
