@@ -18,6 +18,19 @@ const formattedDate = (timestamp) => {
 const PostContent = ({ post }) => (
   <View>
     <Text className='mt-2 text-sm font-iregular'>{post.content}</Text>
+    {/* Render images below the content if they exist */}
+    {post.images && post.images.length > 0 && (
+      <View className='mt-3'>
+        {post.images.map((image, index) => (
+          <Image
+            key={index}
+            source={{ uri: image }}
+            style={{ width: '100%', height: 200, marginBottom: 10 }}
+            resizeMode='cover'
+          />
+        ))}
+      </View>
+    )}
   </View>
 );
 
