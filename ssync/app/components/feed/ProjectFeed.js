@@ -6,15 +6,15 @@ import {
   ScrollView,
   StyleSheet,
   Animated,
-  Easing,
   Image,
   Dimensions,
-  Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddPostModal from './AddPostModal';
 import 'nativewind';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import ProgressInfo from './ProgressInfo';
+import ProjectMembers from './ProjectMembers';
 const { height: screenHeight } = Dimensions.get('window');
 
 const ProjectFeed = () => {
@@ -25,6 +25,8 @@ const ProjectFeed = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
   const [isMembersVisible, setIsMembersVisible] = useState(false);
+  const [isProgressVisible, setIsProgressVisible] = useState(false);
+  useState(55);
 
   const [isAddPostModalVisible, setIsAddPostModalVisible] = useState(false);
   const slideAnim = useState(new Animated.Value(-250))[0];
@@ -128,6 +130,17 @@ const ProjectFeed = () => {
 
   const toggleMembersVisibility = () => {
     setIsMembersVisible(!isMembersVisible);
+
+    if (!isMembersVisible) {
+      setIsProgressVisible(false); // Ensure progress section is hidden when members is shown
+    }
+  };
+
+  const toggleProgressVisibility = () => {
+    setIsProgressVisible(!isProgressVisible);
+    if (!isProgressVisible) {
+      setIsMembersVisible(false); // Ensure members section is hidden when progress is shown
+    }
   };
 
   const handleAddPost = async (newPost) => {
@@ -236,40 +249,31 @@ const ProjectFeed = () => {
         <Text className='text-center text-xl font-iregular mb-5'>
           {project.description}
         </Text>
-        <View className='flex-row justify-center mb-5'>
-          <TouchableOpacity className='bg-[#8971C4] py-2 px-6 rounded-full mr-2'>
+
+        <View className='flex-row justify-center mb-8'>
+          <TouchableOpacity
+            className={`py-2 px-6 rounded-full mr-2 ${
+              isProgressVisible ? 'bg-[#280384]' : 'bg-[#8971C4]'
+            }`}
+            onPress={toggleProgressVisibility}>
             <Text className='text-white text-rg font-psemibold'>Progress</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
-            className='bg-[#8971C4] py-2 px-6 rounded-full ml-2'
+            className={`py-2 px-6 rounded-full ml-2 ${
+              isMembersVisible ? 'bg-[#280384]' : 'bg-[#8971C4] '
+            }`}
             onPress={toggleMembersVisibility}>
             <Text className='text-white text-rg font-psemibold'>Members</Text>
           </TouchableOpacity>
         </View>
 
+        {/* Progress Section */}
+        {isProgressVisible && <ProgressInfo />}
+
+        {/* Members Section */}
         {isMembersVisible && (
-          <View className='bg-white rounded-[50%] border-[#8971C4] border-[0.25px] mx-5 p-5 mt-5'>
-            <View className='flex-row flex-wrap'>
-              {project.users.map((user, index) => (
-                <View key={index} className='w-1/2 p-2'>
-                  <View className='bg-white p-4 rounded-lg'>
-                    <View className='flex-row items-start'>
-                      <Image
-                        source={{ uri: user.profileIcon }}
-                        className='w-12 h-12 rounded-full mb-2'
-                      />
-                      <Text className='text-lg font-psemibold'>
-                        {user.name}
-                      </Text>
-                      <Text className='text-sm'>
-                        {user.tasksCompleted} tasks completed
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
+          <ProjectMembers project={project} />
         )}
       </View>
 
@@ -398,14 +402,6 @@ const styles = StyleSheet.create({
     zIndex: 10,
     elevation: 10,
   },
-  // membersContainer: {
-  //   backgroundColor: '#fff',
-  //   borderRadius: 10,
-  //   borderWidth: 0.25,
-  //   borderColor: '#8971C4',
-  //   padding: 10,
-  //   marginTop: 10,
-  // },
   contentContainer: {
     flexGrow: 1,
     backgroundColor: '#e7e6eb',

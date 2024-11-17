@@ -104,6 +104,23 @@ export const staticUsers = [
         projectName: 'Mobile App',
         description: 'Developing new mobile application',
         projectCode: 'pik2m3',
+        users: [
+          {
+            name: 'Mike',
+            tasksCompleted: 3,
+            profileIcon: 'https://i.pravatar.cc/100?img=3',
+          },
+          {
+            name: 'Jane Smith',
+            tasksCompleted: 5,
+            profileIcon: 'https://i.pravatar.cc/100?img=2',
+          },
+          {
+            name: 'John',
+            tasksCompleted: 4,
+            profileIcon: 'https://i.pravatar.cc/100?img=1',
+          },
+        ],
         posts: [
           {
             id: 1,
