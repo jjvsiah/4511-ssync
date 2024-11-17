@@ -12,6 +12,18 @@ export const staticUsers = [
         projectCode: 'hymr3s',
         projectName: 'Website Redesign',
         description: 'Redesigning company website',
+        users: [
+          {
+            name: 'John',
+            tasksCompleted: 4,
+            profileIcon: 'https://i.pravatar.cc/100?img=1',
+          },
+          {
+            name: 'Jane Smith',
+            tasksCompleted: 6,
+            profileIcon: 'https://i.pravatar.cc/100?img=2',
+          },
+        ],
         posts: [
           {
             id: 1,

@@ -24,6 +24,7 @@ const ProjectFeed = () => {
   const [posts, setPosts] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
+  const [isMembersVisible, setIsMembersVisible] = useState(false);
 
   const [isAddPostModalVisible, setIsAddPostModalVisible] = useState(false);
   const slideAnim = useState(new Animated.Value(-250))[0];
@@ -123,6 +124,10 @@ const ProjectFeed = () => {
 
   const toggleCodeSection = () => {
     setIsCodeExpanded(!isCodeExpanded);
+  };
+
+  const toggleMembersVisibility = () => {
+    setIsMembersVisible(!isMembersVisible);
   };
 
   const handleAddPost = async (newPost) => {
@@ -235,10 +240,37 @@ const ProjectFeed = () => {
           <TouchableOpacity className='bg-[#8971C4] py-2 px-6 rounded-full mr-2'>
             <Text className='text-white text-rg font-psemibold'>Progress</Text>
           </TouchableOpacity>
-          <TouchableOpacity className='bg-[#8971C4] py-2 px-6 rounded-full ml-2'>
+          <TouchableOpacity
+            className='bg-[#8971C4] py-2 px-6 rounded-full ml-2'
+            onPress={toggleMembersVisibility}>
             <Text className='text-white text-rg font-psemibold'>Members</Text>
           </TouchableOpacity>
         </View>
+
+        {isMembersVisible && (
+          <View className='bg-white rounded-[50%] border-[#8971C4] border-[0.25px] mx-5 p-5 mt-5'>
+            <View className='flex-row flex-wrap'>
+              {project.users.map((user, index) => (
+                <View key={index} className='w-1/2 p-2'>
+                  <View className='bg-white p-4 rounded-lg'>
+                    <View className='flex-row items-start'>
+                      <Image
+                        source={{ uri: user.profileIcon }}
+                        className='w-12 h-12 rounded-full mb-2'
+                      />
+                      <Text className='text-lg font-psemibold'>
+                        {user.name}
+                      </Text>
+                      <Text className='text-sm'>
+                        {user.tasksCompleted} tasks completed
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
       </View>
 
       <ScrollView
@@ -366,6 +398,14 @@ const styles = StyleSheet.create({
     zIndex: 10,
     elevation: 10,
   },
+  // membersContainer: {
+  //   backgroundColor: '#fff',
+  //   borderRadius: 10,
+  //   borderWidth: 0.25,
+  //   borderColor: '#8971C4',
+  //   padding: 10,
+  //   marginTop: 10,
+  // },
   contentContainer: {
     flexGrow: 1,
     backgroundColor: '#e7e6eb',
