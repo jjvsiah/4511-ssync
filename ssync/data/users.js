@@ -31,6 +31,16 @@ export const staticUsers = [
             content:
               'Hello team! I just wanted to check in and see if we could maybe have another in-person meeting this upcoming Thursday to discuss the project specification more in-depth?',
             dateTime: '2024-11-15T14:30:00',
+            replies: [
+              {
+                id: 2,
+                content:
+                  "I'm on board! I’m free most of the day, so I am flexible with timing. I’m looking forward to clarifying the spec!",
+                dateTime: '2024-11-15T15:00:00',
+                posterName: 'Jane Smith',
+                profileIcon: 'https://i.pravatar.cc/100?img=2',
+              },
+            ],
             posterName: 'John',
             posterEmail: 'john@example.com',
             profileIcon: 'https://i.pravatar.cc/100?img=1',
@@ -41,6 +51,7 @@ export const staticUsers = [
             content:
               'Hey, I wanted to update you guys with the news that I have finished off our Iteration 1! We are now off to iteration 2.',
             dateTime: '2024-11-17T10:00:00',
+            replies: [],
             posterName: 'Jane Smith',
             posterEmail: 'jane@example.com',
             profileIcon: 'https://i.pravatar.cc/100?img=2',
@@ -51,6 +62,7 @@ export const staticUsers = [
             content:
               'Hey everyone, I’ve started on Iteration 2 and will be focusing on integrating the new features we discussed last week. Please feel free to drop any suggestions here.',
             dateTime: '2024-11-11T09:00:00',
+            replies: [],
             posterName: 'John',
             posterEmail: 'john@example.com',
             profileIcon: 'https://i.pravatar.cc/100?img=1',
@@ -61,6 +73,7 @@ export const staticUsers = [
             content:
               'I’ve gone through the latest spec draft, and I think we’re almost ready to finalize. Let’s aim to have everything wrapped up by Friday.',
             dateTime: '2024-10-19T16:00:00',
+            replies: [],
             posterName: 'Jane Smith',
             posterEmail: 'jane@example.com',
             profileIcon: 'https://i.pravatar.cc/100?img=2',
@@ -71,6 +84,7 @@ export const staticUsers = [
             content:
               'Can someone help clarify the task assignments for the upcoming sprint? I believe I need to take the lead on the front-end work.',
             dateTime: '2024-09-20T12:30:00',
+            replies: [],
             posterName: 'John',
             posterEmail: 'john@example.com',
             profileIcon: 'https://i.pravatar.cc/100?img=1',
@@ -81,6 +95,7 @@ export const staticUsers = [
             content:
               'We’ll be having a feedback session for the latest prototype at 2 PM today. Make sure to review the latest version before joining.',
             dateTime: '2023-02-21T14:00:00',
+            replies: [],
             posterName: 'Jane Smith',
             posterEmail: 'jane@example.com',
             profileIcon: 'https://i.pravatar.cc/100?img=2',
@@ -167,6 +182,7 @@ export const staticUsers = [
             postName: 'User Flow Discussion',
             content: 'Discussing the new user flow design.',
             dateTime: '2024-10-17T12:30:00',
+            replies: [],
             posterName: 'Mike',
             posterEmail: 'mike@example.com',
             profileIcon: 'https://i.pravatar.cc/100?img=3',

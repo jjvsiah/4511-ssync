@@ -15,23 +15,65 @@ const formattedDate = (timestamp) => {
   return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
 };
 
+const PostContent = ({ post }) => (
+  <View>
+    <Text className='mt-2 text-sm font-iregular'>{post.content}</Text>
+  </View>
+);
+
+const PostReplies = ({ replies }) => (
+  <View>
+    {replies.map((reply, replyIndex) => (
+      <View
+        key={replyIndex}
+        style={{
+          marginLeft: 10,
+          backgroundColor: 'white',
+          borderRadius: 12,
+          padding: 10,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            position: 'relative',
+          }}>
+          {/* Profile Image */}
+          <Image
+            source={{ uri: reply.profileIcon }}
+            className='w-9 h-9 rounded-full ml-3 mr-3'
+          />
+          {/* Reply Content */}
+          <View style={{ flex: 1 }}>
+            <Text className='text-xs font-pregular'>{reply.posterName}</Text>
+            <Text className='text-sm font-pregular'>{reply.content}</Text>
+          </View>
+          {/* Date */}
+          <Text
+            className='text-xs text-gray-500 font-pregular'
+            style={{ position: 'absolute', right: 0 }}>
+            {formattedDate(reply.dateTime)}
+          </Text>
+        </View>
+        {/* Grey line on the left */}
+        <View
+          style={{
+            position: 'absolute',
+            left: -5,
+            top: 0,
+            bottom: 0,
+            width: 2,
+            backgroundColor: '#cdcdce',
+          }}
+        />
+      </View>
+    ))}
+  </View>
+);
+
 const Feed = ({ posts, searchQuery, dateOrder, timeFrame }) => {
-  // Use the state hook to store filteredPosts
-  //   const [posts, setPosts] = useState(allPosts);
-
-  //   // Listen for changes in filteredPosts, update state accordingly
-  //   useEffect(() => {
-  //     setPosts(allPosts);
-  //   }, [allPosts]); // Re-run this whenever filteredPosts changes
-  //   console.log('date order:');
-  //   console.log(dateOrder);
-
-  //   console.log('time frame');
-  //   console.log(timeFrame);
-
   const [filteredPosts, setFilteredPosts] = useState(posts);
 
-  // Helper function to check if a date is within the given time frame
   const isWithinTimeFrame = (postDate, timeFrame) => {
     const now = new Date();
     const postTime = new Date(postDate);
@@ -53,27 +95,36 @@ const Feed = ({ posts, searchQuery, dateOrder, timeFrame }) => {
   };
 
   useEffect(() => {
-    // Start with original posts
     let updatedPosts = posts;
 
-    // Filter by search query
     if (searchQuery) {
-      updatedPosts = updatedPosts.filter(
-        (post) =>
+      updatedPosts = updatedPosts.filter((post) => {
+        // Check if the post content matches the search query
+        const postMatches =
           post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
           post.postName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          post.posterName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+          post.posterName.toLowerCase().includes(searchQuery.toLowerCase());
+
+        // Check if any reply content matches the search query
+        const repliesMatch =
+          post.replies &&
+          post.replies.some(
+            (reply) =>
+              reply.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              reply.posterName.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+
+        // Include post if it matches or if any of the replies match
+        return postMatches || repliesMatch;
+      });
     }
 
-    // Filter by time frame
     if (timeFrame) {
       updatedPosts = updatedPosts.filter((post) =>
         isWithinTimeFrame(post.dateTime, timeFrame)
       );
     }
 
-    // Sort posts by date
     if (dateOrder === 'newToOld') {
       updatedPosts = updatedPosts.sort(
         (a, b) => new Date(b.dateTime) - new Date(a.dateTime)
@@ -84,49 +135,47 @@ const Feed = ({ posts, searchQuery, dateOrder, timeFrame }) => {
       );
     }
 
-    // Update the filtered posts state
     setFilteredPosts(updatedPosts);
-  }, [posts, searchQuery, timeFrame, dateOrder]); // Depend on posts, searchQuery, timeFrame, and dateOrder
+  }, [posts, searchQuery, timeFrame, dateOrder]);
+
+  if (!filteredPosts || filteredPosts.length === 0) {
+    return (
+      <Text className='text-center text-xl text-gray-500 font-bold'>
+        No posts found. Click the "Add a post" button to add one!
+      </Text>
+    );
+  }
 
   return (
     <View>
-      {filteredPosts === undefined || filteredPosts.length === 0 ? (
-        <Text className='text-center text-xl text-gray-500 font-bold'>
-          No posts yet. Click the "Add a post" button to add one!
-        </Text>
-      ) : (
-        filteredPosts.map((post, index) => {
-          const postDateFormatted = formattedDate(post.dateTime);
+      {filteredPosts.map((post, index) => {
+        const postDateFormatted = formattedDate(post.dateTime);
 
-          return (
-            <View key={index} className='py-4 px-5 bg-white rounded-2xl mb-3'>
-              <View className='flex-row items-start'>
-                {/* Profile picture */}
-                <Image
-                  source={{ uri: post.profileIcon }}
-                  className='w-11 h-11 rounded-full mr-3'
-                />
-
-                {/* Poster name and post title */}
-                <View>
-                  <Text className='text-xs font-pregular'>
-                    {post.posterName}
-                  </Text>
-                  <Text className='text-lg font-pregular'>{post.postName}</Text>
-                </View>
-
-                {/* Date/Time in top right corner */}
-                <Text className='text-xs text-gray-500 font-pregular absolute top-0 right-0'>
-                  {postDateFormatted}
-                </Text>
+        return (
+          <View key={index} className='py-4 px-5 bg-white rounded-2xl mb-3'>
+            <View className='flex-row items-start'>
+              <Image
+                source={{ uri: post.profileIcon }}
+                className='w-11 h-11 rounded-full mr-3'
+              />
+              <View>
+                <Text className='text-xs font-pregular'>{post.posterName}</Text>
+                <Text className='text-lg font-pregular'>{post.postName}</Text>
               </View>
-
-              {/* Post content */}
-              <Text className='mt-2 text-sm font-iregular'>{post.content}</Text>
+              <Text className='text-xs text-gray-500 font-pregular absolute top-0 right-0'>
+                {postDateFormatted}
+              </Text>
             </View>
-          );
-        })
-      )}
+            <PostContent post={post} />
+            {/* Place the replies outside the original post container */}
+            <View className='ml-3 mt-4'>
+              {post.replies && post.replies.length > 0 && (
+                <PostReplies replies={post.replies} />
+              )}
+            </View>
+          </View>
+        );
+      })}
     </View>
   );
 };

@@ -86,7 +86,12 @@ const ProjectFeed = () => {
 
       if (selectedProject) {
         setProject(selectedProject);
+        setPosts(selectedProject.posts);
       }
+
+      setSearchQuery('');
+      setDateOrder('newToOld');
+      setTimeFrame('allTime');
     } catch (error) {
       console.error('Error changing selected project:', error);
     }
@@ -179,7 +184,7 @@ const ProjectFeed = () => {
   }
 
   return (
-    <View className='bg-white'>
+    <View>
       <Animated.View
         style={[styles.menu, { transform: [{ translateX: slideAnim }] }]}
         className='shadow-lg'>
@@ -205,7 +210,6 @@ const ProjectFeed = () => {
                 onPress={() => {
                   changeSelectedProject(proj.id);
                   toggleMenu();
-                  console.log(`Navigating to project: ${proj.projectName}`);
                 }}>
                 <Text className='text-center text-lg font-psemibold'>
                   {proj.projectName}
@@ -216,8 +220,8 @@ const ProjectFeed = () => {
         </ScrollView>
       </Animated.View>
 
-      <SafeAreaView className='h-full'>
-        <View className='bg-[#e7e6eb]'>
+      <SafeAreaView className='h-full bg-white'>
+        <View className='bg-[#e7e6eb] h-[100%]'>
           <View className='bg-white w-full rounded-b-[30%]'>
             <TouchableOpacity className='absolute left-6' onPress={toggleMenu}>
               <Image
@@ -265,14 +269,7 @@ const ProjectFeed = () => {
             {isMembersVisible && <ProjectMembers project={project} />}
           </View>
 
-          <ScrollView
-            contentContainerStyle={{
-              paddingBottom: isProgressVisible
-                ? 550
-                : isMembersVisible
-                ? 340
-                : 225,
-            }}>
+          <ScrollView>
             {/* Main Feed Section */}
             <View className='w-full px-5 pt-5'>
               <View className='flex-row justify-between'>
