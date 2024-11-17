@@ -30,7 +30,7 @@ export const staticUsers = [
             postName: 'Initial Thoughts on Design',
             content:
               'Hello team! I just wanted to check in and see if we could maybe have another in-person meeting this upcoming Thursday to discuss the project specification more in-depth?',
-            dateTime: '2024-10-15T14:30:00',
+            dateTime: '2024-11-15T14:30:00',
             posterName: 'John',
             posterEmail: 'john@example.com',
             profileIcon: 'https://i.pravatar.cc/100?img=1',
@@ -40,7 +40,47 @@ export const staticUsers = [
             postName: 'UI Review Meeting',
             content:
               'Hey, I wanted to update you guys with the news that I have finished off our Iteration 1! We are now off to iteration 2.',
-            dateTime: '2024-10-16T10:00:00',
+            dateTime: '2024-11-17T10:00:00',
+            posterName: 'Jane Smith',
+            posterEmail: 'jane@example.com',
+            profileIcon: 'https://i.pravatar.cc/100?img=2',
+          },
+          {
+            id: 3,
+            postName: 'Project Update - Iteration 2',
+            content:
+              'Hey everyone, I’ve started on Iteration 2 and will be focusing on integrating the new features we discussed last week. Please feel free to drop any suggestions here.',
+            dateTime: '2024-11-11T09:00:00',
+            posterName: 'John',
+            posterEmail: 'john@example.com',
+            profileIcon: 'https://i.pravatar.cc/100?img=1',
+          },
+          {
+            id: 4,
+            postName: 'Finalizing Project Specification',
+            content:
+              'I’ve gone through the latest spec draft, and I think we’re almost ready to finalize. Let’s aim to have everything wrapped up by Friday.',
+            dateTime: '2024-10-19T16:00:00',
+            posterName: 'Jane Smith',
+            posterEmail: 'jane@example.com',
+            profileIcon: 'https://i.pravatar.cc/100?img=2',
+          },
+          {
+            id: 5,
+            postName: 'Discussion on Task Assignment',
+            content:
+              'Can someone help clarify the task assignments for the upcoming sprint? I believe I need to take the lead on the front-end work.',
+            dateTime: '2024-09-20T12:30:00',
+            posterName: 'John',
+            posterEmail: 'john@example.com',
+            profileIcon: 'https://i.pravatar.cc/100?img=1',
+          },
+          {
+            id: 6,
+            postName: 'Prototype Feedback Session',
+            content:
+              'We’ll be having a feedback session for the latest prototype at 2 PM today. Make sure to review the latest version before joining.',
+            dateTime: '2023-02-21T14:00:00',
             posterName: 'Jane Smith',
             posterEmail: 'jane@example.com',
             profileIcon: 'https://i.pravatar.cc/100?img=2',
