@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,9 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SubtaskModal = ({ visible, onClose, task, onTaskUpdate }) => {
   const [subtasks, setSubtasks] = useState(task.subtasks || []);
@@ -26,7 +26,7 @@ const SubtaskModal = ({ visible, onClose, task, onTaskUpdate }) => {
 
   const handleConfirm = async () => {
     try {
-      const currentUserData = await AsyncStorage.getItem("currentUser");
+      const currentUserData = await AsyncStorage.getItem('loggedInUser');
       if (!currentUserData) return;
 
       const currentUser = JSON.parse(currentUserData);
@@ -50,14 +50,14 @@ const SubtaskModal = ({ visible, onClose, task, onTaskUpdate }) => {
         }),
       }));
 
-      await AsyncStorage.setItem("currentUser", JSON.stringify(currentUser));
+      await AsyncStorage.setItem('loggedInUser', JSON.stringify(currentUser));
 
-      const usersData = await AsyncStorage.getItem("users");
+      const usersData = await AsyncStorage.getItem('users');
       const users = JSON.parse(usersData);
       const updatedUsers = users.map((user) =>
         user.id === currentUser.id ? currentUser : user
       );
-      await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
+      await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
 
       if (onTaskUpdate) {
         onTaskUpdate();
@@ -65,17 +65,16 @@ const SubtaskModal = ({ visible, onClose, task, onTaskUpdate }) => {
 
       onClose();
     } catch (error) {
-      console.error("Error updating subtasks:", error);
+      console.error('Error updating subtasks:', error);
     }
   };
 
   return (
     <Modal
-      animationType="slide"
+      animationType='slide'
       transparent={true}
       visible={visible}
-      onRequestClose={onClose}
-    >
+      onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
@@ -86,7 +85,7 @@ const SubtaskModal = ({ visible, onClose, task, onTaskUpdate }) => {
               </View>
             </View>
             <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color="#000" />
+              <Ionicons name='close' size={24} color='#000' />
             </TouchableOpacity>
           </View>
 
@@ -95,20 +94,18 @@ const SubtaskModal = ({ visible, onClose, task, onTaskUpdate }) => {
               <TouchableOpacity
                 key={subtask.id}
                 style={styles.subtaskItem}
-                onPress={() => handleCheckboxToggle(subtask.id)}
-              >
+                onPress={() => handleCheckboxToggle(subtask.id)}>
                 <View style={styles.checkboxContainer}>
                   <View
                     style={[
                       styles.checkbox,
                       subtask.isComplete && styles.checkboxChecked,
-                    ]}
-                  >
+                    ]}>
                     {subtask.isComplete && (
                       <Ionicons
-                        name="checkmark-sharp"
+                        name='checkmark-sharp'
                         size={14}
-                        color="white"
+                        color='white'
                       />
                     )}
                   </View>
@@ -119,17 +116,15 @@ const SubtaskModal = ({ visible, onClose, task, onTaskUpdate }) => {
 
             <TouchableOpacity
               style={styles.markCompleteItem}
-              onPress={() => setMarkComplete(!markComplete)}
-            >
+              onPress={() => setMarkComplete(!markComplete)}>
               <View style={styles.checkboxContainer}>
                 <View
                   style={[
                     styles.checkbox,
                     markComplete && styles.checkboxChecked,
-                  ]}
-                >
+                  ]}>
                   {markComplete && (
-                    <Ionicons name="checkmark-sharp" size={14} color="white" />
+                    <Ionicons name='checkmark-sharp' size={14} color='white' />
                   )}
                 </View>
                 <Text style={styles.subtaskText}>Mark as complete</Text>
@@ -139,8 +134,7 @@ const SubtaskModal = ({ visible, onClose, task, onTaskUpdate }) => {
 
           <TouchableOpacity
             style={styles.confirmButton}
-            onPress={handleConfirm}
-          >
+            onPress={handleConfirm}>
             <Text style={styles.confirmButtonText}>Confirm</Text>
           </TouchableOpacity>
         </View>
@@ -152,41 +146,41 @@ const SubtaskModal = ({ visible, onClose, task, onTaskUpdate }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "flex-end",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
   },
   modalContainer: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    maxHeight: "80%",
+    maxHeight: '80%',
   },
   modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 20,
   },
   headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   editButton: {
-    backgroundColor: "#E5F1FF",
+    backgroundColor: '#E5F1FF',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 20,
   },
   editButtonText: {
-    color: "#275BBC",
+    color: '#275BBC',
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   subtasksList: {
     marginBottom: 20,
@@ -198,40 +192,40 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "#F0F0F0",
+    borderTopColor: '#F0F0F0',
   },
   checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   checkbox: {
     width: 20,
     height: 20,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: "#D1D5DB",
+    borderColor: '#D1D5DB',
     marginRight: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   checkboxChecked: {
-    backgroundColor: "#275BBC",
-    borderColor: "#275BBC",
+    backgroundColor: '#275BBC',
+    borderColor: '#275BBC',
   },
   subtaskText: {
     fontSize: 16,
-    color: "#1F2937",
+    color: '#1F2937',
   },
   confirmButton: {
-    backgroundColor: "#275BBC",
+    backgroundColor: '#275BBC',
     paddingVertical: 12,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
   confirmButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
 

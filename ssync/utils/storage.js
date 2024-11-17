@@ -1,5 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { staticUsers } from "../data/users";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { staticUsers } from '../data/users';
 
 export const resetAndInitialiseData = async () => {
   try {
@@ -7,13 +7,13 @@ export const resetAndInitialiseData = async () => {
     await AsyncStorage.clear();
 
     // Initialise with fresh data (hopefully)
-    await AsyncStorage.setItem("users", JSON.stringify(staticUsers));
+    await AsyncStorage.setItem('users', JSON.stringify(staticUsers));
 
-    console.log("Data reinitialized successfully");
+    console.log('Data reinitialized successfully');
     // Verify the data
-    const storedUsers = await AsyncStorage.getItem("users");
-    console.log("Verified stored users:", JSON.parse(storedUsers));
+    const storedUsers = await AsyncStorage.getItem('users');
+    console.log('Verified stored users:', JSON.parse(storedUsers));
   } catch (error) {
-    console.error("Error reinitializing data:", error);
+    console.error('Error reinitializing data:', error);
   }
 };
