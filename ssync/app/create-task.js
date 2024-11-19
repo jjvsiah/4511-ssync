@@ -1,81 +1,182 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image,
   ScrollView,
-  Modal,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+  Alert,
+  Platform,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker';
 
 const CreateTask = () => {
   const router = useRouter();
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [taskDate, setTaskDate] = useState("");
-  const [taskTime, setTaskTime] = useState("08:00");
-  const [taskPriority, setTaskPriority] = useState("High");
+  const [taskTitle, setTaskTitle] = useState('');
+  const [taskDescription, setTaskDescription] = useState('');
+  const [taskDate, setTaskDate] = useState(new Date());
+  const [taskTime, setTaskTime] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [taskPriority, setTaskPriority] = useState('High');
+  const [selectedPlatform, setSelectedPlatform] = useState('');
+  const [subtasks, setSubtasks] = useState([
+    { id: Date.now(), title: '', isComplete: false },
+  ]);
   const [assignedUsers, setAssignedUsers] = useState([
-    { id: 1, name: "Amy", avatar: "https://i.pravatar.cc/100?img=1" },
-    { id: 2, name: "Jess", avatar: "https://i.pravatar.cc/100?img=2" },
+    { id: 1, name: 'Amy', avatar: 'https://i.pravatar.cc/100?img=1' },
+    { id: 2, name: 'Jess', avatar: 'https://i.pravatar.cc/100?img=2' },
   ]);
 
-  // New state for platform and subtasks
-  const [selectedPlatform, setSelectedPlatform] = useState(null);
-  const [platformModalVisible, setPlatformModalVisible] = useState(false);
-  const [subtasks, setSubtasks] = useState([{ id: Date.now(), title: "" }]);
-
-  // Platform options with icons
+  // Extended platform options
   const platforms = [
-    { id: "figma", name: "Figma", icon: "logo-figma" },
-    { id: "vscode", name: "VS Code", icon: "code-slash" },
-    { id: "github", name: "GitHub", icon: "logo-github" },
-    { id: "excel", name: "Excel", icon: "document" },
-    { id: "teams", name: "Teams", icon: "people" },
+    { id: '', name: 'Select Platform' },
+    { id: 'figma', name: 'Figma' },
+    { id: 'github', name: 'GitHub' },
+    { id: 'vscode', name: 'VS Code' },
+    { id: 'teams', name: 'Microsoft Teams' },
+    { id: 'slack', name: 'Slack' },
+    { id: 'notion', name: 'Notion' },
+    { id: 'jira', name: 'Jira' },
+    { id: 'custom', name: 'Custom Platform' },
   ];
 
-  // Handle adding new subtask
+  // Subtask functions
   const addSubtask = () => {
-    setSubtasks([...subtasks, { id: Date.now(), title: "" }]);
+    setSubtasks([
+      ...subtasks,
+      { id: Date.now(), title: '', isComplete: false },
+    ]);
   };
 
-  // Handle updating subtask
-  const updateSubtask = (id, title) => {
-    setSubtasks(
-      subtasks.map((task) => (task.id === id ? { ...task, title } : task))
-    );
-  };
-
-  // Handle removing subtask
   const removeSubtask = (id) => {
     if (subtasks.length > 1) {
       setSubtasks(subtasks.filter((task) => task.id !== id));
     }
   };
 
-  const handleCreateTask = () => {
-    const newTask = {
-      id: Date.now(),
-      title: taskTitle,
-      description: taskDescription,
-      date: taskDate,
-      time: taskTime,
-      priority: taskPriority,
-      platform: selectedPlatform,
-      assignedUsers,
-      subtasks: subtasks.filter((task) => task.title.trim() !== ""),
-      isComplete: false,
-      progress: 0,
-    };
+  const updateSubtask = (id, title) => {
+    setSubtasks(
+      subtasks.map((task) => (task.id === id ? { ...task, title } : task))
+    );
+  };
 
-    // Here you would add the task to your tasks list
-    console.log("Task created:", newTask);
-    router.back();
+  const handleDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setTaskDate(selectedDate);
+    }
+  };
+
+  const handleTimeChange = (event, selectedTime) => {
+    setShowTimePicker(false);
+    if (selectedTime) {
+      setTaskTime(selectedTime);
+    }
+  };
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  };
+
+  const formatTime = (time) => {
+    return time.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  };
+
+  const handleCreateTask = async () => {
+    try {
+      // Validation
+      if (!taskTitle.trim()) {
+        Alert.alert('Error', 'Please enter a task title');
+        return;
+      }
+      if (!selectedPlatform) {
+        Alert.alert('Error', 'Please select a platform');
+        return;
+      }
+      // if (!subtasks[0].title.trim()) {
+      //   Alert.alert("Error", "Please add at least one subtask");
+      //   return;
+      // }
+
+      const currentUserData = await AsyncStorage.getItem('loggedInUser');
+      if (!currentUserData) {
+        Alert.alert('Error', 'No user logged in');
+        return;
+      }
+
+      const currentUser = JSON.parse(currentUserData);
+
+      // Filter out empty subtasks and ensure proper structure
+      const filteredSubtasks = subtasks
+        .filter((task) => task.title.trim())
+        .map((task) => ({
+          id: task.id,
+          title: task.title.trim(),
+          isComplete: false,
+        }));
+
+      // Calculate initial progress
+      const progress = 0; // Start at 0%
+
+      const newTask = {
+        id: Date.now(),
+        title: taskTitle,
+        description: taskDescription,
+        date: formatDate(taskDate),
+        time: formatTime(taskTime),
+        priority: taskPriority,
+        platform: selectedPlatform,
+        assignees: assignedUsers,
+        subtasks: filteredSubtasks,
+        isComplete: false,
+        progress: progress,
+        totalSubtasks: filteredSubtasks.length,
+        completedSubtasks: 0,
+      };
+
+      if (!currentUser.projects || !currentUser.projects.length) {
+        currentUser.projects = [
+          {
+            id: 1,
+            projectName: 'My Project',
+            description: 'Default project',
+            tasks: [],
+          },
+        ];
+      }
+
+      currentUser.projects[0].tasks.push(newTask);
+
+      await AsyncStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+      const usersData = await AsyncStorage.getItem('users');
+      const users = JSON.parse(usersData);
+      const updatedUsers = users.map((user) =>
+        user.id === currentUser.id ? currentUser : user
+      );
+      await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
+      await AsyncStorage.setItem('tasksLastUpdated', Date.now().toString());
+
+      console.log('Task created successfully');
+      router.back();
+    } catch (error) {
+      console.error('Error creating task:', error);
+      Alert.alert('Error', 'Failed to create task. Please try again.');
+    }
   };
 
   return (
@@ -83,43 +184,18 @@ const CreateTask = () => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <Ionicons name="arrow-back" size={24} color="black" />
+          onPress={() => router.back()}>
+          <Ionicons name='arrow-back' size={24} color='black' />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create Task</Text>
         <View style={styles.backButton} />
       </View>
 
       <ScrollView style={styles.content}>
-        {/* Platform Selection */}
-        <Text style={styles.label}>Platform</Text>
-        <TouchableOpacity
-          style={styles.platformSelector}
-          onPress={() => setPlatformModalVisible(true)}
-        >
-          {selectedPlatform ? (
-            <View style={styles.selectedPlatform}>
-              <Ionicons
-                name={platforms.find((p) => p.id === selectedPlatform)?.icon}
-                size={24}
-                color="#275BBC"
-              />
-              <Text style={styles.selectedPlatformText}>
-                {platforms.find((p) => p.id === selectedPlatform)?.name}
-              </Text>
-            </View>
-          ) : (
-            <Text style={styles.placeholderText}>Select platform</Text>
-          )}
-          <Ionicons name="chevron-down" size={24} color="#666" />
-        </TouchableOpacity>
-
-        {/* Existing fields */}
         <Text style={styles.label}>Task title</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter task title"
+          placeholder='Enter task title'
           value={taskTitle}
           onChangeText={setTaskTitle}
         />
@@ -127,60 +203,88 @@ const CreateTask = () => {
         <Text style={styles.label}>Description</Text>
         <TextInput
           style={[styles.input, styles.textArea]}
-          placeholder="Enter task description"
+          placeholder='Enter task description'
           value={taskDescription}
           onChangeText={setTaskDescription}
           multiline
-          numberOfLines={4}
+          numberOfLines={3}
         />
 
-        {/* Priority*/}
+        <View style={styles.rowContainer}>
+          <View style={styles.halfWidth}>
+            <Text style={styles.label}>Date</Text>
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => setShowDatePicker(true)}>
+              <Text>{formatDate(taskDate)}</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.halfWidth}>
+            <Text style={styles.label}>Time</Text>
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => setShowTimePicker(true)}>
+              <Text>{formatTime(taskTime)}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={taskDate}
+            mode='date'
+            display='default'
+            onChange={handleDateChange}
+          />
+        )}
+
+        {showTimePicker && (
+          <DateTimePicker
+            value={taskTime}
+            mode='time'
+            display='default'
+            onChange={handleTimeChange}
+          />
+        )}
+
         <Text style={styles.label}>Priority</Text>
         <View style={styles.priorityContainer}>
-          {["Low", "Medium", "High"].map((priority) => (
+          {['Low', 'Medium', 'High'].map((priority) => (
             <TouchableOpacity
               key={priority}
               style={[
                 styles.priorityButton,
                 taskPriority === priority && styles.priorityButtonActive,
               ]}
-              onPress={() => setTaskPriority(priority)}
-            >
+              onPress={() => setTaskPriority(priority)}>
               <Text
                 style={[
-                  styles.priorityButtonText,
-                  taskPriority === priority && styles.priorityButtonTextActive,
-                ]}
-              >
+                  styles.priorityText,
+                  taskPriority === priority && styles.priorityTextActive,
+                ]}>
                 {priority}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Date */}
-        <View style={styles.dateTimeContainer}>
-          <View style={styles.dateContainer}>
-            <Text style={styles.label}>Date</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="DD/MM/YYYY"
-              value={taskDate}
-              onChangeText={setTaskDate}
-            />
-          </View>
-          <View style={styles.timeContainer}>
-            <Text style={styles.label}>Time</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="08:00"
-              value={taskTime}
-              onChangeText={setTaskTime}
-            />
-          </View>
+        <Text style={styles.label}>Platform</Text>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedPlatform}
+            onValueChange={(itemValue) => setSelectedPlatform(itemValue)}
+            style={styles.picker}>
+            {platforms.map((platform) => (
+              <Picker.Item
+                key={platform.id}
+                label={platform.name}
+                value={platform.id}
+              />
+            ))}
+          </Picker>
         </View>
 
-        {/* Subtasks Section */}
         <Text style={styles.label}>Subtasks</Text>
         {subtasks.map((subtask, index) => (
           <View key={subtask.id} style={styles.subtaskRow}>
@@ -190,74 +294,24 @@ const CreateTask = () => {
               value={subtask.title}
               onChangeText={(text) => updateSubtask(subtask.id, text)}
             />
-            <TouchableOpacity
-              style={styles.removeSubtaskButton}
-              onPress={() => removeSubtask(subtask.id)}
-            >
-              <Ionicons name="close-circle" size={24} color="#666" />
-            </TouchableOpacity>
+            {subtasks.length > 1 && (
+              <TouchableOpacity
+                style={styles.removeSubtaskButton}
+                onPress={() => removeSubtask(subtask.id)}>
+                <Ionicons name='close-circle' size={24} color='#666' />
+              </TouchableOpacity>
+            )}
           </View>
         ))}
 
         <TouchableOpacity style={styles.addSubtaskButton} onPress={addSubtask}>
-          <Ionicons name="add-circle" size={24} color="#275BBC" />
+          <Ionicons name='add-circle' size={24} color='#275BBC' />
           <Text style={styles.addSubtaskText}>Add subtask</Text>
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Assignee  */}
-      <Text style={styles.label}>Assign to:</Text>
-      <View style={styles.assigneeContainer}>
-        {assignedUsers.map((user) => (
-          <View key={user.id} style={styles.assigneeChip}>
-            <Image source={{ uri: user.avatar }} style={styles.avatar} />
-            <Text style={styles.assigneeName}>{user.name}</Text>
-            <TouchableOpacity style={styles.removeButton}>
-              <Text>
-                <Ionicons name="close" size={20} color="#666" />
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-        <TouchableOpacity style={styles.addAssigneeButton}>
-          <Text>
-            <Ionicons name="add" size={24} color="#4B6BF6" />
-          </Text>
-        </TouchableOpacity>
-      </View>
-      {/* Platform Selection Modal */}
-      <Modal
-        visible={platformModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setPlatformModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Platform</Text>
-              <TouchableOpacity onPress={() => setPlatformModalVisible(false)}>
-                <Ionicons name="close" size={24} color="#666" />
-              </TouchableOpacity>
-            </View>
-            {platforms.map((platform) => (
-              <TouchableOpacity
-                key={platform.id}
-                style={styles.platformOption}
-                onPress={() => {
-                  setSelectedPlatform(platform.id);
-                  setPlatformModalVisible(false);
-                }}
-              >
-                <Ionicons name={platform.icon} size={24} color="#275BBC" />
-                <Text style={styles.platformOptionText}>{platform.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </Modal>
       <TouchableOpacity style={styles.createButton} onPress={handleCreateTask}>
-        <Ionicons name="add" size={24} color="white" />
+        <Ionicons name='add' size={24} color='white' />
         <Text style={styles.createButtonText}>Create Task</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -267,15 +321,15 @@ const CreateTask = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    borderBottomColor: '#F0F0F0',
   },
   backButton: {
     width: 40,
@@ -283,8 +337,8 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     fontSize: 20,
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: '600',
+    textAlign: 'center',
   },
   content: {
     flex: 1,
@@ -292,179 +346,68 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
     marginBottom: 8,
-    color: "#333",
-    fontFamily: "pregular",
+    color: '#333',
+    fontFamily: 'pregular',
   },
   input: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: '#F5F5F5',
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
     fontSize: 16,
   },
-  dateTimeContainer: {
-    flexDirection: "row",
+  textArea: {
+    height: 100,
+    textAlignVertical: 'top',
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     gap: 16,
+    marginBottom: 16,
   },
-  dateContainer: {
+  halfWidth: {
     flex: 1,
   },
-  timeContainer: {
-    flex: 1,
+  pickerContainer: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  picker: {
+    backgroundColor: '#F5F5F5',
   },
   priorityContainer: {
-    flexDirection: "row",
-    gap: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 16,
+    gap: 12,
   },
   priorityButton: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: "#F5F5F5",
-    alignItems: "center",
+    borderRadius: 25,
+    backgroundColor: '#F5F5F5',
+    alignItems: 'center',
   },
   priorityButtonActive: {
-    backgroundColor: "#000",
+    backgroundColor: '#000000',
   },
-  priorityButtonText: {
-    color: "#666",
-    fontWeight: "500",
-  },
-  priorityButtonTextActive: {
-    color: "white",
-  },
-  assigneeContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 16,
-  },
-  assigneeChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F5F5F5",
-    borderRadius: 20,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
-  avatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
-  assigneeName: {
-    marginHorizontal: 8,
+  priorityText: {
+    color: '#666666',
     fontSize: 14,
-    color: "#333",
+    fontWeight: '500',
   },
-  removeButton: {
-    padding: 2,
-  },
-  addAssigneeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#F5F5F5",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  createButton: {
-    flexDirection: "row",
-    backgroundColor: "#275BBC",
-    margin: 16,
-    padding: 16,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  createButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 8,
-    fontFamily: "pregular",
-  },
-  bottomNav: {
-    flexDirection: "row",
-    borderTopWidth: 1,
-    borderTopColor: "#F0F0F0",
-    paddingVertical: 8,
-  },
-  navItem: {
-    flex: 1,
-    alignItems: "center",
-  },
-  navText: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 4,
-  },
-
-  // New styles for platform selection and subtasks
-  platformSelector: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#F5F5F5",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  selectedPlatform: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  selectedPlatformText: {
-    marginLeft: 8,
-    fontSize: 16,
-    color: "#333",
-  },
-  placeholderText: {
-    color: "#666",
-    fontSize: 16,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    maxHeight: "80%",
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  platformOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 8,
-    backgroundColor: "#F5F5F5",
-  },
-  platformOptionText: {
-    marginLeft: 12,
-    fontSize: 16,
-    color: "#333",
+  priorityTextActive: {
+    color: '#FFFFFF',
   },
   subtaskRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 8,
   },
   subtaskInput: {
@@ -472,24 +415,33 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     marginRight: 8,
   },
-  removeSubtaskButton: {
-    padding: 4,
-  },
   addSubtaskButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 12,
     marginBottom: 16,
   },
   addSubtaskText: {
     marginLeft: 8,
-    color: "#275BBC",
+    color: '#275BBC',
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
   },
-  textArea: {
-    height: 100,
-    textAlignVertical: "top",
+  createButton: {
+    flexDirection: 'row',
+    backgroundColor: '#275BBC',
+    margin: 16,
+    padding: 16,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  createButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+    fontFamily: 'pregular',
   },
 });
 

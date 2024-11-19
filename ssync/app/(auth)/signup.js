@@ -43,7 +43,7 @@ const signup = () => {
   const handleSignup = async () => {
     const nameRegex = /^(?=.*[a-zA-ZÀ-ÿ])[a-zA-ZÀ-ÿ\s'-]+$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     // Error checking
     if (!name || !nameRegex.test(name)) {
@@ -52,19 +52,25 @@ const signup = () => {
       return;
     }
 
-    if (!emailRegex.test(email)) {
+    if (!email || !emailRegex.test(email)) {
       alert('Please enter a valid email address.');
       setEmail('');
       return;
     }
 
-    if (!passwordRegex.test(password)) {
-      alert(
-        'Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter and 1 number.'
-      );
-      setPassword('');
+    if (!password) {
+      alert('Please enter a valid password.');
+      setEmail('');
       return;
     }
+
+    // if (!passwordRegex.test(password)) {
+    //   alert(
+    //     "Password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter and 1 number."
+    //   );
+    //   setPassword("");
+    //   return;
+    // }
 
     if (!accepted) {
       alert('Please accept the terms and conditions to proceed.');
@@ -76,14 +82,16 @@ const signup = () => {
     try {
       const existingUsers = await AsyncStorage.getItem('users');
       const users = existingUsers ? JSON.parse(existingUsers) : [];
-      users.push({ name, email, password });
+      users.push({ name, email, password, projects: [] });
       await AsyncStorage.setItem('users', JSON.stringify(users));
       console.log('User data saved successfully');
+
+      await AsyncStorage.setItem('loggedInUser', email);
+      await AsyncStorage.setItem('isLoggedIn', 'true');
+      router.push('/diveInScreen');
     } catch (error) {
       console.error('Error saving data to AsyncStorage:', error);
     }
-
-    router.push('/home');
   };
 
   return (
