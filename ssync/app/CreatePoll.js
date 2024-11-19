@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,22 +7,22 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CreatePoll = () => {
   const router = useRouter();
-  const [question, setQuestion] = useState("");
-  const [options, setOptions] = useState([""]);
+  const [question, setQuestion] = useState('');
+  const [options, setOptions] = useState(['']);
 
   const addOption = () => {
     if (options.length < 5) {
-      setOptions([...options, ""]);
+      setOptions([...options, '']);
     } else {
-      Alert.alert("Limit Reached", "Maximum 5 options allowed");
+      Alert.alert('Limit Reached', 'Maximum 5 options allowed');
     }
   };
 
@@ -42,19 +42,19 @@ const CreatePoll = () => {
   const handleCreatePoll = async () => {
     try {
       if (!question.trim()) {
-        Alert.alert("Error", "Please enter a poll question");
+        Alert.alert('Error', 'Please enter a poll question');
         return;
       }
 
       const validOptions = options.filter((opt) => opt.trim());
       if (validOptions.length < 2) {
-        Alert.alert("Error", "Please add at least 2 options");
+        Alert.alert('Error', 'Please add at least 2 options');
         return;
       }
 
-      const currentUserData = await AsyncStorage.getItem("currentUser");
+      const currentUserData = await AsyncStorage.getItem('loggedInUser');
       if (!currentUserData) {
-        Alert.alert("Error", "No user logged in");
+        Alert.alert('Error', 'No user logged in');
         return;
       }
 
@@ -62,10 +62,17 @@ const CreatePoll = () => {
 
       const newPoll = {
         id: Date.now().toString(),
+<<<<<<< HEAD
         type: "poll",
         title: question.trim(), // Changed from question to title to match the display component
         options: validOptions.map((text) => ({
           text,
+=======
+        type: 'poll', // Keep this to identify as poll
+        question: question.trim(),
+        options: validOptions.map((option) => ({
+          text: option,
+>>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
           votes: 0,
         })),
         voters: [],
@@ -74,29 +81,37 @@ const CreatePoll = () => {
 
       if (currentUser.projects && currentUser.projects.length > 0) {
         currentUser.projects[0].tasks.push(newPoll);
+<<<<<<< HEAD
         await AsyncStorage.setItem("currentUser", JSON.stringify(currentUser));
 
         const usersData = await AsyncStorage.getItem("users");
+=======
+
+        await AsyncStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+
+        // Update all users
+        const usersData = await AsyncStorage.getItem('users');
+>>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
         if (usersData) {
           const users = JSON.parse(usersData);
           const updatedUsers = users.map((user) =>
             user.id === currentUser.id ? currentUser : user
           );
-          await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
+          await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
         }
 
-        Alert.alert("Success", "Poll created successfully", [
+        Alert.alert('Success', 'Poll created successfully', [
           {
-            text: "OK",
+            text: 'OK',
             onPress: () => router.back(),
           },
         ]);
       } else {
-        Alert.alert("Error", "No project found to add poll to");
+        Alert.alert('Error', 'No project found to add poll to');
       }
     } catch (error) {
-      console.error("Error creating poll:", error);
-      Alert.alert("Error", "Failed to create poll. Please try again.");
+      console.error('Error creating poll:', error);
+      Alert.alert('Error', 'Failed to create poll. Please try again.');
     }
   };
 
@@ -104,7 +119,7 @@ const CreatePoll = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name='arrow-back' size={24} color='black' />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Create Poll</Text>
         <View style={{ width: 24 }} />
@@ -114,7 +129,7 @@ const CreatePoll = () => {
         <Text style={styles.label}>Create poll</Text>
         <TextInput
           style={styles.input}
-          placeholder="Poll question"
+          placeholder='Poll question'
           value={question}
           onChangeText={setQuestion}
           multiline
@@ -131,24 +146,22 @@ const CreatePoll = () => {
             {options.length > 1 && (
               <TouchableOpacity
                 onPress={() => removeOption(index)}
-                style={styles.removeOption}
-              >
-                <Ionicons name="close-circle" size={24} color="#666" />
+                style={styles.removeOption}>
+                <Ionicons name='close-circle' size={24} color='#666' />
               </TouchableOpacity>
             )}
           </View>
         ))}
 
         <TouchableOpacity style={styles.addOptionButton} onPress={addOption}>
-          <Ionicons name="add-circle-outline" size={24} color="#666" />
+          <Ionicons name='add-circle-outline' size={24} color='#666' />
           <Text style={styles.addOptionText}>Add options</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.createButton}
-          onPress={handleCreatePoll}
-        >
-          <Ionicons name="add" size={24} color="white" />
+          onPress={handleCreatePoll}>
+          <Ionicons name='add' size={24} color='white' />
           <Text style={styles.createButtonText}>Create Poll</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -159,17 +172,17 @@ const CreatePoll = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   content: {
     flex: 1,
@@ -177,24 +190,24 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: '#F5F5F5',
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
     minHeight: 50,
   },
   optionContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 12,
   },
   optionInput: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: '#F5F5F5',
     borderRadius: 8,
     padding: 12,
     marginRight: 8,
@@ -203,31 +216,31 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   addOptionButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
     padding: 12,
     borderRadius: 8,
     marginBottom: 24,
   },
   addOptionText: {
     marginLeft: 8,
-    color: "#666",
+    color: '#666',
     fontSize: 16,
   },
   createButton: {
-    flexDirection: "row",
-    backgroundColor: "#275BBC",
+    flexDirection: 'row',
+    backgroundColor: '#275BBC',
     padding: 16,
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 16,
   },
   createButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     marginLeft: 8,
   },
 });

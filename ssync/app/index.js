@@ -2,12 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { resetAndInitialiseData } from '../utils/storage';
 
 const Index = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        console.log('Initializing app data...');
+        await resetAndInitialiseData(); // Call your initialization function
+        console.log('App data initialized successfully.');
+        await checkLoginStatus();
+      } catch (error) {
+        console.error('Error during initialization:', error);
+        setIsLoading(false);
+      }
+      await checkLoginStatus();
+    };
+
     const checkLoginStatus = async () => {
       const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
       if (isLoggedIn === 'true') {
@@ -15,9 +29,10 @@ const Index = () => {
       } else {
         router.replace('/OnboardingMain', undefined, { animation: 'none' }); // Navigate to onboarding if not logged in
       }
+      setIsLoading(false);
     };
 
-    checkLoginStatus();
+    initializeApp();
   }, []);
 
   if (isLoading) {

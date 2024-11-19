@@ -1,15 +1,39 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+=======
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const PollOption = ({ text, isSelected, onSelect }) => (
+  <TouchableOpacity className='flex-row items-center py-2' onPress={onSelect}>
+    <View
+      className={`w-5 h-5 rounded-full border-2 border-gray-300 mr-3 items-center justify-center
+      ${isSelected ? 'bg-blue-600 border-blue-600' : 'bg-white'}`}>
+      {isSelected && <View className='w-2 h-2 rounded-full bg-white' />}
+    </View>
+    <Text className='text-base'>{text}</Text>
+  </TouchableOpacity>
+);
+
+>>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
 const PollCard = ({ poll, onVoteComplete }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [hasVoted, setHasVoted] = useState(false);
 
   const handleVote = async (optionIndex) => {
     try {
+<<<<<<< HEAD
       // Get current user data
       const currentUserData = await AsyncStorage.getItem("currentUser");
+=======
+      const currentUserData = await AsyncStorage.getItem('loggedInUser');
+      if (!currentUserData) return;
+
+>>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
       const currentUser = JSON.parse(currentUserData);
 
       // Check if user has already voted
@@ -18,9 +42,24 @@ const PollCard = ({ poll, onVoteComplete }) => {
         return;
       }
 
+<<<<<<< HEAD
       // Get all users data
       const usersData = await AsyncStorage.getItem("users");
       let users = JSON.parse(usersData);
+=======
+      const updatedUser = { ...currentUser, projects: updatedProjects };
+      await AsyncStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+
+      // Update all users
+      const usersData = await AsyncStorage.getItem('users');
+      if (usersData) {
+        const users = JSON.parse(usersData);
+        const updatedUsers = users.map((user) =>
+          user.id === currentUser.id ? updatedUser : user
+        );
+        await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
+      }
+>>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
 
       // Find and update the poll in the users data
       users = users.map((user) => {
@@ -70,7 +109,11 @@ const PollCard = ({ poll, onVoteComplete }) => {
       setHasVoted(true);
       if (onVoteComplete) onVoteComplete();
     } catch (error) {
+<<<<<<< HEAD
       console.error("Error voting in poll:", error);
+=======
+      console.error('Error voting:', error);
+>>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
     }
   };
 
@@ -84,8 +127,15 @@ const PollCard = ({ poll, onVoteComplete }) => {
   };
 
   return (
+<<<<<<< HEAD
     <View style={styles.card}>
       <Text style={styles.question}>{poll.title}</Text>
+=======
+    <View className='bg-[#373F51] rounded-xl p-4 mb-4'>
+      <Text className='text-white text-lg font-semibold mb-4'>
+        {poll.question}
+      </Text>
+>>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
 
       <View style={styles.optionsContainer}>
         {poll.options.map((option, index) => {
@@ -93,6 +143,7 @@ const PollCard = ({ poll, onVoteComplete }) => {
           const percentage = calculatePercentage(option.votes || 0, totalVotes);
           const isSelected = selectedOption === index;
 
+<<<<<<< HEAD
           return (
             <TouchableOpacity
               key={index}
@@ -125,6 +176,27 @@ const PollCard = ({ poll, onVoteComplete }) => {
 
       {hasVoted && (
         <Text style={styles.totalVotes}>{`${getTotalVotes()} votes`}</Text>
+=======
+      {!hasVoted && (
+        <TouchableOpacity
+          onPress={handleVote}
+          disabled={selectedOption === null}
+          className={`mt-4 py-2 px-6 rounded-full self-end ${
+            selectedOption !== null ? 'bg-[#8B6EF3]' : 'bg-gray-400'
+          }`}>
+          <Text className='text-white font-semibold'>Vote</Text>
+        </TouchableOpacity>
+      )}
+
+      {hasVoted && (
+        <View className='mt-4'>
+          {poll.options.map((option, index) => (
+            <View key={index} className='mb-2'>
+              <Text className='text-white'>{`${option.text}: ${option.votes} votes`}</Text>
+            </View>
+          ))}
+        </View>
+>>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
       )}
     </View>
   );
