@@ -141,20 +141,11 @@ import {
   StyleSheet,
   Alert,
   Image,
-<<<<<<< HEAD
-} from "react-native";
-import React, { useState, useEffect } from "react";
-import { useRouter, useNavigation } from "expo-router";
-import "nativewind";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { staticUsers, initializeData } from "../../data/users";
-=======
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useNavigation } from 'expo-router';
 import 'nativewind';
 import AsyncStorage from '@react-native-async-storage/async-storage';
->>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
 
 const login = () => {
   const [email, setEmail] = useState('');
@@ -200,15 +191,6 @@ const login = () => {
 
   const handleLogin = async () => {
     try {
-<<<<<<< HEAD
-      if (!email || !password) {
-        Alert.alert("Error", "Please enter both email and password");
-        return;
-      }
-
-      const storedUsers = await AsyncStorage.getItem("users");
-      const users = storedUsers ? JSON.parse(storedUsers) : staticUsers;
-=======
       const storedUsers = await AsyncStorage.getItem('users');
       const users = storedUsers ? JSON.parse(storedUsers) : [];
 >>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
@@ -218,28 +200,6 @@ const login = () => {
       );
 
       if (user) {
-<<<<<<< HEAD
-        // Store user data for the session
-        await AsyncStorage.setItem("currentUser", JSON.stringify(user));
-        await AsyncStorage.setItem("isLoggedIn", "true");
-
-        // Clear input fields
-        setEmail("");
-        setPassword("");
-
-        // Navigate to home screen
-        router.push("/home");
-      } else {
-        Alert.alert(
-          "Invalid Credentials",
-          "Email or password is incorrect\n\nHint: Try these credentials:\nEmail: john@example.com\nPassword: password123"
-        );
-        setPassword("");
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      Alert.alert("Error", "There was an issue with the login process");
-=======
         await AsyncStorage.setItem('isLoggedIn', 'true');
         await AsyncStorage.setItem('loggedInUser', JSON.stringify(user)); // Store the entire user object
         console.log('stored the user in async');
@@ -252,7 +212,6 @@ const login = () => {
     } catch (error) {
       console.error('Error reading data from AsyncStorage:', error);
       Alert.alert('Error', 'There was an issue with the login process');
->>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
     }
   };
 
@@ -265,13 +224,7 @@ const login = () => {
           value={email}
           onChangeText={setEmail}
           style={styles.input}
-<<<<<<< HEAD
-          autoCapitalize="none"
-          keyboardType="email-address"
-          autoComplete="email"
-=======
           autoCapitalize='none'
->>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
         />
       </View>
 
@@ -283,21 +236,6 @@ const login = () => {
           onChangeText={setPassword}
           secureTextEntry
           style={styles.input}
-<<<<<<< HEAD
-          autoCapitalize="none"
-          autoComplete="password"
-        />
-      </View>
-
-      <Text className="text-sm font-ibold mb-16">Forgot Password?</Text>
-
-      <TouchableOpacity
-        onPress={handleLogin}
-        style={styles.button}
-        activeOpacity={0.7}
-      >
-        <Text className="text-white text-center text-2xl font-ibold">
-=======
           autoCapitalize='none'
         />
       </View>
@@ -307,24 +245,14 @@ const login = () => {
       {/* Log In Button */}
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text className='text-white text-center text-2xl font-ibold'>
->>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
           Log In
         </Text>
       </TouchableOpacity>
 
-<<<<<<< HEAD
-      <TouchableOpacity
-        onPress={() => router.replace("/signup")}
-        activeOpacity={0.7}
-      >
-        <Text className="text-xl font-iregular text-center">
-          Don't have an account? <Text className="font-ibold">Register</Text>
-=======
       {/* Register Link */}
       <TouchableOpacity onPress={() => router.replace('/signup')}>
         <Text className='text-xl font-iregular text-center'>
           Don't have an account? <Text className='font-ibold'>Register</Text>
->>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
         </Text>
       </TouchableOpacity>
     </View>

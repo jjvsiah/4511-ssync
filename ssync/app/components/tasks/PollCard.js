@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-=======
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,10 +20,6 @@ const PollCard = ({ poll, onVoteComplete }) => {
 
   const handleVote = async (optionIndex) => {
     try {
-<<<<<<< HEAD
-      // Get current user data
-      const currentUserData = await AsyncStorage.getItem("currentUser");
-=======
       const currentUserData = await AsyncStorage.getItem('loggedInUser');
       if (!currentUserData) return;
 
@@ -59,78 +49,15 @@ const PollCard = ({ poll, onVoteComplete }) => {
         );
         await AsyncStorage.setItem('users', JSON.stringify(updatedUsers));
       }
->>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
 
-      // Find and update the poll in the users data
-      users = users.map((user) => {
-        const updatedUser = { ...user };
-        updatedUser.projects = user.projects.map((project) => {
-          const updatedProject = { ...project };
-          updatedProject.tasks = project.tasks.map((task) => {
-            if (task.type === "poll" && task.id === poll.id) {
-              // Update vote count for the selected option
-              const updatedOptions = task.options.map((option, index) => {
-                if (index === optionIndex) {
-                  return {
-                    ...option,
-                    votes: (option.votes || 0) + 1,
-                  };
-                }
-                return option;
-              });
-
-              // Add user to voters list
-              return {
-                ...task,
-                options: updatedOptions,
-                voters: [...(task.voters || []), currentUser.id],
-              };
-            }
-            return task;
-          });
-          return updatedProject;
-        });
-        return updatedUser;
-      });
-
-      // Update AsyncStorage
-      await AsyncStorage.setItem("users", JSON.stringify(users));
-
-      // Update current user data
-      const updatedCurrentUser = users.find(
-        (user) => user.id === currentUser.id
-      );
-      await AsyncStorage.setItem(
-        "currentUser",
-        JSON.stringify(updatedCurrentUser)
-      );
-
-      setSelectedOption(optionIndex);
       setHasVoted(true);
       if (onVoteComplete) onVoteComplete();
     } catch (error) {
-<<<<<<< HEAD
-      console.error("Error voting in poll:", error);
-=======
       console.error('Error voting:', error);
->>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
     }
   };
 
-  const calculatePercentage = (votes, totalVotes) => {
-    if (totalVotes === 0) return 0;
-    return Math.round((votes / totalVotes) * 100);
-  };
-
-  const getTotalVotes = () => {
-    return poll.options.reduce((sum, option) => sum + (option.votes || 0), 0);
-  };
-
   return (
-<<<<<<< HEAD
-    <View style={styles.card}>
-      <Text style={styles.question}>{poll.title}</Text>
-=======
     <View className='bg-[#373F51] rounded-xl p-4 mb-4'>
       <Text className='text-white text-lg font-semibold mb-4'>
         {poll.question}

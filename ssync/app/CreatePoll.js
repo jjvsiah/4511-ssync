@@ -62,12 +62,6 @@ const CreatePoll = () => {
 
       const newPoll = {
         id: Date.now().toString(),
-<<<<<<< HEAD
-        type: "poll",
-        title: question.trim(), // Changed from question to title to match the display component
-        options: validOptions.map((text) => ({
-          text,
-=======
         type: 'poll', // Keep this to identify as poll
         question: question.trim(),
         options: validOptions.map((option) => ({
@@ -81,17 +75,11 @@ const CreatePoll = () => {
 
       if (currentUser.projects && currentUser.projects.length > 0) {
         currentUser.projects[0].tasks.push(newPoll);
-<<<<<<< HEAD
-        await AsyncStorage.setItem("currentUser", JSON.stringify(currentUser));
-
-        const usersData = await AsyncStorage.getItem("users");
-=======
 
         await AsyncStorage.setItem('loggedInUser', JSON.stringify(currentUser));
 
         // Update all users
         const usersData = await AsyncStorage.getItem('users');
->>>>>>> dd67b41f11623cf415163ac1dea4d0f89c0d4026
         if (usersData) {
           const users = JSON.parse(usersData);
           const updatedUsers = users.map((user) =>
