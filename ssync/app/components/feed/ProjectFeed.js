@@ -167,8 +167,6 @@ const ProjectFeed = () => {
           },
         ])
       );
-
-      alert('Post added successfully!');
     } catch (error) {
       console.error('Error adding post to project:', error);
       alert('Error adding post.');

@@ -81,16 +81,6 @@ const Tasks = () => {
         return renderEmptyState();
       }
 
-      if (activeButton === 'polls') {
-        return displayedTasks.map((poll) => (
-          <PollCard
-            key={poll.id}
-            poll={poll}
-            onVoteComplete={() => setRefreshKey((old) => old + 1)}
-          />
-        ));
-      }
-
       return displayedTasks.map((task) => (
         <TaskItem
           key={task.id}
@@ -140,7 +130,6 @@ const Tasks = () => {
   const buttons = [
     { id: 'complete', label: 'COMPLETE' },
     { id: 'todo', label: 'TO DO' },
-    { id: 'polls', label: 'POLLS' },
   ];
 
   // Load tasks when screen comes into focus
@@ -180,23 +169,16 @@ const Tasks = () => {
         const allTasks = selectedProject.tasks;
 
         let filteredItems;
-        if (activeButton === 'polls') {
-          // Filter only polls
-          filteredItems = allTasks.filter((item) => item.type === 'poll');
-        } else {
-          // Filter tasks (non-polls) based on completion status
-          filteredItems = allTasks.filter((item) => {
-            if (item.type === 'poll') return false; // Exclude polls from tasks view
-            return activeButton === 'complete'
-              ? item.isComplete
-              : !item.isComplete;
-          });
+        filteredItems = allTasks.filter((item) => {
+          return activeButton === 'complete'
+            ? item.isComplete
+            : !item.isComplete;
+        });
 
-          // Apply task filters if not in polls view
-          if (filteredItems.length > 0) {
-            filteredItems = await applyFilters(filteredItems);
-          }
+        if (filteredItems.length > 0) {
+          filteredItems = await applyFilters(filteredItems);
         }
+
         // Filter based on active button (complete/todo)
         const buttonFilteredTasks = allTasks.filter((task) => {
           if (activeButton === 'complete') return task.isComplete;
@@ -252,20 +234,6 @@ const Tasks = () => {
     setModalVisible(false);
   };
 
-  const onNewPollPress = () => {
-    router.push('/CreatePoll');
-    setModalVisible(false);
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    Animated.timing(slideAnim, {
-      toValue: isMenuOpen ? -250 : 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-
   // Add empty state
   const renderEmptyState = () => (
     <View className='flex-1 justify-center items-center p-8'>
@@ -277,43 +245,6 @@ const Tasks = () => {
 
   return (
     <SafeAreaView className='bg-white h-full'>
-      {/* TODO: Hamburger menu: make it show */}
-      <Animated.View
-        style={[styles.menu, { transform: [{ translateX: slideAnim }] }]}
-        className='shadow-lg'>
-        <ScrollView className='mt-12'>
-          <TouchableOpacity
-            className='absolute left-5 top-4 z-15'
-            onPress={toggleMenu}>
-            <Image
-              source={require('../../assets/icons/cross-black.png')}
-              className='w-9 h-9'
-            />
-          </TouchableOpacity>
-          <Text className='font-pregular text-3xl mt-24 text-center mb-5'>
-            Select Project
-          </Text>
-          {currentUser?.projects.map((proj, index) => {
-            const backgroundColor = index % 2 === 0 ? '#E9E5FF' : '#B9E5FF';
-            return (
-              <TouchableOpacity
-                key={proj.id}
-                style={{ backgroundColor }}
-                className='rounded-3xl mx-8 py-5 mb-5'
-                onPress={() => {
-                  changeSelectedProject(proj.id);
-                  toggleMenu();
-                  console.log(`Navigating to project: ${proj.projectName}`);
-                }}>
-                <Text className='text-center text-xl font-psemibold'>
-                  {proj.projectName}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </Animated.View>
-
       <View className='flex-row justify-between items-center px-8 pt-4'>
         <Text className='font-pregular text-3xl text-center flex-1'>Tasks</Text>
         <TouchableOpacity
@@ -334,9 +265,8 @@ const Tasks = () => {
         ))}
       </View>
       <TouchableOpacity
-        className='bg-[#8EC9E6] p-2 rounded-full flex-row items-center w-1/4 ml-4'
+        className='bg-[#8EC9E6] p-2 rounded-full items-center w-1/5 ml-4'
         onPress={() => setFilterModalVisible(true)}>
-        <Text className='text-[black] ml-4'>Filter </Text>
         <Ionicons name='filter' size={24} color='black' />
       </TouchableOpacity>
 
@@ -365,7 +295,6 @@ const Tasks = () => {
         onClose={() => setModalVisible(false)}
         onNewTaskPress={onNewTaskPress}
         onNewMeetingPress={onNewMeetingPress}
-        onNewPollPress={onNewPollPress}
       />
     </SafeAreaView>
   );
