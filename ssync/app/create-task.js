@@ -108,10 +108,6 @@ const CreateTask = () => {
         Alert.alert('Error', 'Please select a platform');
         return;
       }
-      // if (!subtasks[0].title.trim()) {
-      //   Alert.alert("Error", "Please add at least one subtask");
-      //   return;
-      // }
 
       const currentUserData = await AsyncStorage.getItem('loggedInUser');
       if (!currentUserData) {
@@ -177,6 +173,21 @@ const CreateTask = () => {
       console.error('Error creating task:', error);
       Alert.alert('Error', 'Failed to create task. Please try again.');
     }
+  };
+
+  const priorityColors = {
+    High: {
+      background: '#FFE4E4',
+      text: '#FF4444',
+    },
+    Medium: {
+      background: '#f5e9e1',
+      text: '#d99562',
+    },
+    Low: {
+      background: '#FFF4E4',
+      text: '#FFA500',
+    },
   };
 
   return (
@@ -255,13 +266,17 @@ const CreateTask = () => {
               key={priority}
               style={[
                 styles.priorityButton,
-                taskPriority === priority && styles.priorityButtonActive,
+                taskPriority === priority && {
+                  backgroundColor: priorityColors[priority].background,
+                },
               ]}
               onPress={() => setTaskPriority(priority)}>
               <Text
                 style={[
                   styles.priorityText,
-                  taskPriority === priority && styles.priorityTextActive,
+                  taskPriority === priority && {
+                    color: priorityColors[priority].text,
+                  },
                 ]}>
                 {priority}
               </Text>
@@ -401,6 +416,7 @@ const styles = StyleSheet.create({
     color: '#666666',
     fontSize: 14,
     fontWeight: '500',
+    fontFamily: 'pregular',
   },
   priorityTextActive: {
     color: '#FFFFFF',
