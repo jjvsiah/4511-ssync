@@ -39,7 +39,9 @@ const ProjectCard = ({ project, index }) => {
     <TouchableOpacity
       className={`${backgroundColor} p-4 rounded-xl mr-4`}
       style={{ width: cardWidth }}
-      onPress={() => router.push(`/project/${project.id}`)}>
+      onPress={() => {
+        router.push('/feed');
+      }}>
       <Text className='text-xl font-semibold mb-3'>{project.projectName}</Text>
       <View className='flex-row items-center mb-4'>
         <View className='flex-row'>
@@ -63,7 +65,9 @@ const ProjectCard = ({ project, index }) => {
       </View>
       <TouchableOpacity
         className='bg-[#275BBC] py-2.5 rounded-full items-center'
-        onPress={() => router.push(`/project/${project.id}`)}>
+        onPress={() => {
+          router.push('/feed');
+        }}>
         <Text className='text-white font-semibold'>View</Text>
       </TouchableOpacity>
     </TouchableOpacity>
@@ -167,9 +171,7 @@ const Home = () => {
   const loadProjects = async () => {
     try {
       const currentUserData = await AsyncStorage.getItem('loggedInUser');
-      // console.log('got it ' + currentUserData);
       if (currentUserData) {
-        // console.log('here');
         const user = JSON.parse(currentUserData);
         setProjects(user.projects || []);
       }
